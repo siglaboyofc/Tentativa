@@ -1,9 +1,121 @@
-Local Orionlib = loadstring(game:HttpGet(('https://raw.githubusercontent.com/jensohnirst/Or/main
+local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/tlredz/Library/refs/heads/main/redz-V5-remake/main.luau"))()
 
-local window = orionlinb:makewindown( (Name = "Tiololo hub", HidePremium = false, saveConfing = false,
+local Window = Library:MakeWindow({
+  Title = "Tiololo : tiololo",
+  SubTitle = "dev by tiololo,Sr.Vinicius.ofc",
+  ScriptFolder = "redz-library-V5"
+})
 
-local tab = window:Maketab({
- Name " tab 1",
- Icon " rbxssetid://4483345998",
- PremiumOnly " false
- ))
+local Minimizer = Window:NewMinimizer({
+  KeyCode = Enum.KeyCode.LeftControl
+})
+
+local MobileButton = Minimizer:CreateMobileMinimizer({
+  Image = "rbxassetid://0",
+  BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+})
+
+local Tab = Window:MakeTab({
+  Title = "Tiololo",
+  Icon = "bruh"
+})
+
+local Tab = Window:MakeTab({ "tiololo", "bruh" })
+
+Window:Dialog({
+  Title = "Hello!",
+  Content = "meu nome é tiololo e eu sou brasileil está tudo em beta ainda! aproveite",
+  Options = {
+    {
+      Name = "tiololo"
+    },
+    {
+      Name = "Yes!",
+      Callback = function(self)
+        print("Yes, i like Coffee")
+      end
+    }
+  })
+})
+
+Window:Notify({
+  Title = "BRASIL!",
+  Content = "this is a Notification",
+  Image = "rbxassetid://10734953451",
+  Duration = 5
+})
+
+Tab:AddSection("Section")
+
+Tab:AddToggle({
+  Name = "Toggle",
+  Default = false,
+  Callback = function(Value)
+    
+  end
+})
+
+Tab:AddButton({
+  Name = "teste ainda",
+  Debounce = 0.5,
+  Callback = function()
+    
+  end
+})
+
+Tab:AddSlider({
+  Name = "EU SLA PRR",
+  Min = -5,
+  Max = 5,
+  Increment = 0.25,
+  Default = 0,
+  Callback = function(Value)
+    
+  end
+})
+
+Tab:AddDropdown({
+  Name = "Dropdown",
+  Options = {"one", "two", "three", "four", "five"},
+  Default = "one",
+  Callback = function(Value)
+    
+  end
+})
+
+Tab:AddDropdown({
+  Name = "Dropdown",
+  MultiSelect = true,
+  Options = {"one", "two", "three", "four", "five"},
+  Default = {"one", "four"},
+  Callback = function(Value)
+    
+  end
+})
+
+Tab:AddTextBox({
+  Name = "ver comk fica",
+  Default "como fica",
+  Placeholder = "como fica",
+  ClearOnFocus = true,
+  Callback = function(Value)
+    
+  end
+})
+
+Tab:AddParagraph("Paragraph", "This is a Paragraph\nSecond Line")
+
+Tab:AddToggle({
+  Name = "apenas teste",
+  Flag = "toggle_flag"
+})
+
+MainTab:AddDiscordInvite({
+	Title = "tiololo | Community",
+	Description = "A community for redz Hub Users -- official scripts, updates, and suport in one place.",
+	Banner = "rbxassetid://17382040552", -- You can put an RGB Color: Color3.fromRGB(233, 37, 69)
+	Logo = "rbxassetid://17382040552",
+	Invite = "https://discord.gg/redz-hub",
+	Members = 470000, -- Optional
+	Online = 20000, -- Optional
+})
