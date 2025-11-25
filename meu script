@@ -1,0 +1,9 @@
+Local Orionlib = loadstring(game:HttpGet(('https://raw.githubusercontent.com/jensohnirst/Or/main
+
+local window = orionlinb:makewindown( (Name = "Tiololo hub", HidePremium = false, saveConfing = false,
+
+local tab = window:Maketab({
+ Name " tab 1",
+ Icon " rbxssetid://4483345998",
+ PremiumOnly " false
+ ))
