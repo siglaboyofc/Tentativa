@@ -102,39 +102,68 @@ local MorphBtn = CreateSmallButton("MORPH", 10, 105)
 local EspBtn   = CreateSmallButton("ESP",   140, 105)
 local TpBtn    = CreateSmallButton("TP",    270, 105)
 
+-- LINHA 3 – velocidade do fly
+local SpeedPlus  = CreateSmallButton("+ SPEED", 10, 150)
+local SpeedMinus = CreateSmallButton("- SPEED", 140, 150)
+
 ------------------------------------------------------------
--- SISTEMA DE FLY
+-- FLY FE REAL (W A S D + ajustar velocidade)
 ------------------------------------------------------------
 
 local flying = false
 local speed = 2
+local moveVec = Vector3.new()
 
+local UIS = game:GetService("UserInputService")
 local player = game.Players.LocalPlayer
 local char = player.Character or player.CharacterAdded:Wait()
-local hum = char:WaitForChild("Humanoid")
+local hrp = char:WaitForChild("HumanoidRootPart")
 
 local bodyGyro
 local bodyVel
 
+-- MOVIMENTO WASD
+UIS.InputBegan:Connect(function(key, gp)
+    if gp or not flying then return end
+    local x,z,y = moveVec.X,moveVec.Z,moveVec.Y
+
+    if key.KeyCode == Enum.KeyCode.W then z = -1 end
+    if key.KeyCode == Enum.KeyCode.S then z =  1 end
+    if key.KeyCode == Enum.KeyCode.A then x = -1 end
+    if key.KeyCode == Enum.KeyCode.D then x =  1 end
+    if key.KeyCode == Enum.KeyCode.Space then y = 1 end
+    if key.KeyCode == Enum.KeyCode.LeftShift then y = -1 end
+
+    moveVec = Vector3.new(x,y,z)
+end)
+
+UIS.InputEnded:Connect(function(key)
+    if not flying then return end
+    moveVec = Vector3.new()
+end)
+
 local function startFly()
     flying = true
-    FlyBtn.Text = "FLY: ON"
+    FlyBtn.Text = "FLY: ON (Speed: "..speed..")"
     FlyBtn.BackgroundColor3 = Color3.fromRGB(0, 140, 0)
 
     bodyGyro = Instance.new("BodyGyro")
     bodyGyro.P = 9e4
-    bodyGyro.Parent = char.HumanoidRootPart
+    bodyGyro.CFrame = hrp.CFrame
+    bodyGyro.Parent = hrp
 
     bodyVel = Instance.new("BodyVelocity")
-    bodyVel.Velocity = Vector3.zero
     bodyVel.MaxForce = Vector3.new(9e9, 9e9, 9e9)
-    bodyVel.Parent = char.HumanoidRootPart
+    bodyVel.Parent = hrp
 
     task.spawn(function()
         while flying do
             local cam = workspace.CurrentCamera
             bodyGyro.CFrame = cam.CFrame
-            bodyVel.Velocity = cam.CFrame.LookVector * speed * 50
+
+            local direction = cam.CFrame:VectorToWorldSpace(moveVec)
+            bodyVel.Velocity = direction * (speed * 25)
+
             task.wait()
         end
     end)
@@ -142,9 +171,8 @@ end
 
 local function stopFly()
     flying = false
-    FlyBtn.Text = "FLY: OFF"
+    FlyBtn.Text = "FLY: OFF (Speed: "..speed..")"
     FlyBtn.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
-
     if bodyGyro then bodyGyro:Destroy() end
     if bodyVel then bodyVel:Destroy() end
 end
@@ -153,8 +181,19 @@ FlyBtn.MouseButton1Click:Connect(function()
     if flying then stopFly() else startFly() end
 end)
 
+-- CONTROLE DE VELOCIDADE
+SpeedPlus.MouseButton1Click:Connect(function()
+    speed = speed + 1
+    FlyBtn.Text = (flying and "FLY: ON (Speed: "..speed..")" or "FLY: OFF (Speed: "..speed..")")
+end)
+
+SpeedMinus.MouseButton1Click:Connect(function()
+    speed = math.max(1, speed - 1)
+    FlyBtn.Text = (flying and "FLY: ON (Speed: "..speed..")" or "FLY: OFF (Speed: "..speed..")")
+end)
+
 ------------------------------------------------------------
--- FLING BALL (para seu próprio jogo)
+-- FLING BALL (opcional)
 ------------------------------------------------------------
 
 local function createFlingBall()
