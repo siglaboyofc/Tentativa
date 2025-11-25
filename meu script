@@ -76,7 +76,7 @@ Label.Text = "Botões da sua interface:"
 Label.Parent = Content
 
 ------------------------------------------------------------
--- SISTEMA DE BOTÕES PEQUENOS
+-- BOTÕES PEQUENOS
 ------------------------------------------------------------
 
 local function CreateSmallButton(text, posX, posY)
@@ -102,12 +102,12 @@ local MorphBtn = CreateSmallButton("MORPH", 10, 105)
 local EspBtn   = CreateSmallButton("ESP",   140, 105)
 local TpBtn    = CreateSmallButton("TP",    270, 105)
 
--- LINHA 3 – velocidade do fly
+-- LINHA 3 – velocidade
 local SpeedPlus  = CreateSmallButton("+ SPEED", 10, 150)
 local SpeedMinus = CreateSmallButton("- SPEED", 140, 150)
 
 ------------------------------------------------------------
--- FLY FE REAL (W A S D + ajustar velocidade)
+-- FLY REAL
 ------------------------------------------------------------
 
 local flying = false
@@ -181,72 +181,95 @@ FlyBtn.MouseButton1Click:Connect(function()
     if flying then stopFly() else startFly() end
 end)
 
--- CONTROLE DE VELOCIDADE
+-- VELOCIDADE
 SpeedPlus.MouseButton1Click:Connect(function()
     speed = speed + 1
-    FlyBtn.Text = (flying and "FLY: ON (Speed: "..speed..")" or "FLY: OFF (Speed: "..speed..")")
+    FlyBtn.Text = flying and "FLY: ON (Speed: "..speed..")" or "FLY: OFF (Speed: "..speed..")"
 end)
 
 SpeedMinus.MouseButton1Click:Connect(function()
     speed = math.max(1, speed - 1)
-    FlyBtn.Text = (flying and "FLY: ON (Speed: "..speed..")" or "FLY: OFF (Speed: "..speed..")")
+    FlyBtn.Text = flying and "FLY: ON (Speed: "..speed..")" or "FLY: OFF (Speed: "..speed..")"
 end)
 
 ------------------------------------------------------------
--- FLING BALL (opcional)
+-- FLING BALL REAL (BROOKHAVEN STYLE)
 ------------------------------------------------------------
 
-local function createFlingBall()
-    local ball = Instance.new("Part")
-    ball.Shape = Enum.PartType.Ball
-    ball.Size = Vector3.new(6,6,6)
-    ball.Color = Color3.fromRGB(255,0,0)
-    ball.Material = Enum.Material.Neon
-    ball.CanCollide = true
-    ball.Parent = workspace
-
-    local hrp = char:WaitForChild("HumanoidRootPart")
-    ball.Position = hrp.Position + Vector3.new(0,2,0)
-
-    local bv = Instance.new("BodyVelocity")
-    bv.Velocity = Vector3.new(0,0,0)
-    bv.MaxForce = Vector3.new(9e9,9e9,9e9)
-    bv.Parent = ball
-
-    task.spawn(function()
-        while ball.Parent do
-            task.wait(0.1)
-            for _,plr in pairs(game.Players:GetPlayers()) do
-                if plr ~= player and plr.Character and plr.Character:FindFirstChild("HumanoidRootPart") then
-                    local dist = (ball.Position - plr.Character.HumanoidRootPart.Position).Magnitude
-                    if dist < 8 then
-                        plr.Character.HumanoidRootPart.Velocity = Vector3.new(
-                            math.random(-50,50),
-                            90,
-                            math.random(-50,50)
-                        )
-                    end
-                end
-            end
+local function getBallFromInventory()
+    local backpack = player:WaitForChild("Backpack")
+    for _, item in ipairs(backpack:GetChildren()) do
+        if item.Name:lower():find("ball") or item.Name:lower():find("bola") then
+            return item
         end
-    end)
+    end
+end
 
+local function equipBall()
+    local tool = getBallFromInventory()
+    if not tool then return end
+    player.Character.Humanoid:EquipTool(tool)
+    task.wait(0.3)
+    local ball = tool:FindFirstChild("Handle") or tool:FindFirstChildWhichIsA("Part")
     return ball
 end
 
-local currentBall = nil
+local flingRunning = false
+
+local function startRealFlingBall()
+    if flingRunning then return end
+    flingRunning = true
+
+    local ball = equipBall()
+    if not ball then
+        flingRunning = false
+        return
+    end
+
+    FlingBallBtn.Text = "BALL ON"
+    FlingBallBtn.BackgroundColor3 = Color3.fromRGB(140,0,0)
+
+    task.spawn(function()
+        while flingRunning and ball and ball.Parent do
+            local hrp = char:FindFirstChild("HumanoidRootPart")
+            if not hrp then break end
+
+            -- girar rápido
+            local angle = tick() * 20
+            local radius = 4
+
+            local x = math.cos(angle) * radius
+            local z = math.sin(angle) * radius
+            local y = math.sin(tick() * 6) * 1.5
+
+            ball.CFrame = CFrame.new(hrp.Position + Vector3.new(x, y, z))
+
+            -- empurrar players
+            for _,plr in ipairs(game.Players:GetPlayers()) do
+                if plr ~= player and plr.Character and plr.Character:FindFirstChild("HumanoidRootPart") then
+                    local dist = (ball.Position - plr.Character.HumanoidRootPart.Position).Magnitude
+                    if dist < 6 then
+                        plr.Character.HumanoidRootPart.Velocity =
+                            (plr.Character.HumanoidRootPart.Position - ball.Position).Unit * 120 
+                            + Vector3.new(0,80,0)
+                    end
+                end
+            end
+
+            task.wait()
+        end
+    end)
+end
+
+local function stopRealFlingBall()
+    flingRunning = false
+    FlingBallBtn.Text = "FLING BALL"
+    FlingBallBtn.BackgroundColor3 = Color3.fromRGB(60,60,60)
+end
 
 FlingBallBtn.MouseButton1Click:Connect(function()
-    if currentBall then
-        currentBall:Destroy()
-        currentBall = nil
-        FlingBallBtn.Text = "FLING BALL"
-        FlingBallBtn.BackgroundColor3 = Color3.fromRGB(60,60,60)
-    else
-        currentBall = createFlingBall()
-        FlingBallBtn.Text = "BALL ON"
-        FlingBallBtn.BackgroundColor3 = Color3.fromRGB(140,0,0)
-    end
+    if flingRunning then stopRealFlingBall()
+    else startRealFlingBall() end
 end)
 
 ------------------------------------------------------------
