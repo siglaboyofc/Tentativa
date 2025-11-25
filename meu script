@@ -93,9 +93,9 @@ local function CreateSmallButton(text, posX, posY)
 end
 
 -- LINHA 1
-local FlyBtn   = CreateSmallButton("FLY: OFF", 10, 60)
-local FlingBtn = CreateSmallButton("FLING",    140, 60)
-local SwordBtn = CreateSmallButton("SWORD",    270, 60)
+local FlyBtn       = CreateSmallButton("FLY: OFF",     10, 60)
+local FlingBallBtn = CreateSmallButton("FLING BALL", 140, 60)
+local SwordBtn     = CreateSmallButton("SWORD",      270, 60)
 
 -- LINHA 2
 local MorphBtn = CreateSmallButton("MORPH", 10, 105)
@@ -151,6 +151,63 @@ end
 
 FlyBtn.MouseButton1Click:Connect(function()
     if flying then stopFly() else startFly() end
+end)
+
+------------------------------------------------------------
+-- FLING BALL (para seu próprio jogo)
+------------------------------------------------------------
+
+local function createFlingBall()
+    local ball = Instance.new("Part")
+    ball.Shape = Enum.PartType.Ball
+    ball.Size = Vector3.new(6,6,6)
+    ball.Color = Color3.fromRGB(255,0,0)
+    ball.Material = Enum.Material.Neon
+    ball.CanCollide = true
+    ball.Parent = workspace
+
+    local hrp = char:WaitForChild("HumanoidRootPart")
+    ball.Position = hrp.Position + Vector3.new(0,2,0)
+
+    local bv = Instance.new("BodyVelocity")
+    bv.Velocity = Vector3.new(0,0,0)
+    bv.MaxForce = Vector3.new(9e9,9e9,9e9)
+    bv.Parent = ball
+
+    task.spawn(function()
+        while ball.Parent do
+            task.wait(0.1)
+            for _,plr in pairs(game.Players:GetPlayers()) do
+                if plr ~= player and plr.Character and plr.Character:FindFirstChild("HumanoidRootPart") then
+                    local dist = (ball.Position - plr.Character.HumanoidRootPart.Position).Magnitude
+                    if dist < 8 then
+                        plr.Character.HumanoidRootPart.Velocity = Vector3.new(
+                            math.random(-50,50),
+                            90,
+                            math.random(-50,50)
+                        )
+                    end
+                end
+            end
+        end
+    end)
+
+    return ball
+end
+
+local currentBall = nil
+
+FlingBallBtn.MouseButton1Click:Connect(function()
+    if currentBall then
+        currentBall:Destroy()
+        currentBall = nil
+        FlingBallBtn.Text = "FLING BALL"
+        FlingBallBtn.BackgroundColor3 = Color3.fromRGB(60,60,60)
+    else
+        currentBall = createFlingBall()
+        FlingBallBtn.Text = "BALL ON"
+        FlingBallBtn.BackgroundColor3 = Color3.fromRGB(140,0,0)
+    end
 end)
 
 ------------------------------------------------------------
