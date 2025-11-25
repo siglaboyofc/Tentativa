@@ -1,266 +1,323 @@
-- Redz-style Hub UI (LocalScript)
--- Autor: Gerado pelo ChatGPT a pedido do usuário
--- Uso: Cole este LocalScript em StarterGui. Ele cria uma interface visual parecida com a do Redz Hub.
+-- Redz-style Hub UI (LocalScript)
+-- Uso: Cole este LocalScript em StarterGui.
 -- Observação: este script só cria a interface (frontend). Adicione funções e comandos nas callbacks de cada botão.
 
 local Players = game:GetService("Players")
 local TweenService = game:GetService("TweenService")
 local player = Players.LocalPlayer
-local playerGui = player:WaitForChild("PlayerGui")
+local mouse = player:GetMouse()
 
--- ====== CONFIGURAÇÕES ======
-local windowName = "TiololoHub" -- nome da GUI
-local defaultAccent = Color3.fromRGB(255, 64, 64) -- cor principal (você pode mudar)
-local backgroundBlur = true -- aplica blur ao abrir
-
--- ====== UTILITÁRIOS ======
-local function make(class, props)
+-- Helper
+local function create(class, props)
     local obj = Instance.new(class)
     if props then
         for k, v in pairs(props) do
-            if k ~= "Parent" then
-                obj[k] = v
-            end
-        end
-        if props.Parent then
-            obj.Parent = props.Parent
+            if k == "Parent" then obj.Parent = v
+            else obj[k] = v end
         end
     end
     return obj
 end
 
-local function shortTween(instance, props, time)
-    time = time or 0.2
-    local info = TweenInfo.new(time, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
-    local tween = TweenService:Create(instance, info, props)
-    tween:Play()
-    return tween
-end
+-- Main ScreenGui
+local screenGui = create("ScreenGui", {Name = "RedzStyleHub", ResetOnSpawn = false, Parent = player:WaitForChild("PlayerGui")})
 
--- ====== CRIA GUI ======
-local screenGui = make("ScreenGui", {Name = windowName, Parent = playerGui, ResetOnSpawn = false})
-
--- Blur (opcional)
-local blur
-if backgroundBlur then
-    blur = make("BlurEffect", {Parent = game:GetService("Lighting"), Name = windowName .. "Blur", Size = 0})
-end
-
-local mainFrame = make("Frame", {
-    Name = "MainFrame",
+-- Main Window
+local window = create("Frame", {
+    Name = "Window",
     Parent = screenGui,
     AnchorPoint = Vector2.new(0.5, 0.5),
-    Position = UDim2.new(0.5, 0, 0.5, 0),
-    Size = UDim2.new(0, 900, 0, 520),
-    BackgroundColor3 = Color3.fromRGB(20,20,20),
+    Position = UDim2.fromScale(0.5, 0.5),
+    Size = UDim2.new(0, 760, 0, 460),
+    BackgroundColor3 = Color3.fromRGB(24, 24, 24),
     BorderSizePixel = 0,
-    Visible = true,
+    ClipsDescendants = true,
+    ZIndex = 2
 })
 
--- Sombra/outline
-local shadow = make("UICorner", {Parent = mainFrame, CornerRadius = UDim.new(0, 12)})
+-- Rounded UI stroke effect
+local uicorner = create("UICorner", {Parent = window, CornerRadius = UDim.new(0, 12)})
+local uiStroke = create("UIStroke", {Parent = window, Thickness = 1, Color = Color3.fromRGB(40,40,40), ApplyStrokeMode = Enum.ApplyStrokeMode.Border})
 
--- Outer stroke
-local stroke = make("UIStroke", {Parent = mainFrame, Thickness = 1, ApplyStrokeMode = Enum.ApplyStrokeMode.Border, Color = Color3.fromRGB(35,35,35)})
-
--- Header
-local header = make("Frame", {
-    Name = "Header",
-    Parent = mainFrame,
-    Size = UDim2.new(1, 0, 0, 64),
+-- Top bar
+local topBar = create("Frame", {
+    Name = "TopBar",
+    Parent = window,
+    Size = UDim2.new(1, 0, 0, 52),
     BackgroundTransparency = 1,
 })
-make("UICorner", {Parent = header, CornerRadius = UDim.new(0, 12)})
+create("UICorner", {Parent = topBar, CornerRadius = UDim.new(0, 12)})
 
-local title = make("TextLabel", {
-    Name = "Title",
-    Parent = header,
-    Position = UDim2.new(0, 20, 0, 12),
-    Size = UDim2.new(0.5, -20, 0, 40),
-    BackgroundTransparency = 1,
-    Text = "Tiololo Hub",
-    TextSize = 24,
-    Font = Enum.Font.GothamBold,
-    TextColor3 = Color3.fromRGB(240,240,240),
-    TextXAlignment = Enum.TextXAlignment.Left,
-})
-
--- Close button
-local closeBtn = make("TextButton", {
-    Name = "Close",
-    Parent = header,
-    AnchorPoint = Vector2.new(1, 0.5),
-    Position = UDim2.new(1, -18, 0.5, 0),
+-- Title + Icon
+local icon = create("ImageLabel", {
+    Parent = topBar,
     Size = UDim2.new(0, 36, 0, 36),
-    BackgroundColor3 = Color3.fromRGB(40,40,40),
-    BorderSizePixel = 0,
-    Text = "✕",
-    TextSize = 20,
-    Font = Enum.Font.GothamBold,
-    TextColor3 = Color3.fromRGB(220,220,220),
-})
-make("UICorner", {Parent = closeBtn, CornerRadius = UDim.new(0, 8)})
-make("UIStroke", {Parent = closeBtn, Thickness = 1, Color = Color3.fromRGB(30,30,30)})
-
--- Left sidebar (tabs)
-local sidebar = make("Frame", {
-    Name = "Sidebar",
-    Parent = mainFrame,
-    Position = UDim2.new(0, 18, 0, 86),
-    Size = UDim2.new(0, 220, 0, 400),
-    BackgroundColor3 = Color3.fromRGB(28,28,28),
-    BorderSizePixel = 0,
-})
-make("UICorner", {Parent = sidebar, CornerRadius = UDim.new(0, 8)})
-make("UIStroke", {Parent = sidebar, Thickness = 1, Color = Color3.fromRGB(32,32,32)})
-
-local sidebarTitle = make("TextLabel", {
-    Parent = sidebar,
-    Size = UDim2.new(1, -20, 0, 34),
-    Position = UDim2.new(0, 10, 0, 6),
+    Position = UDim2.new(0, 12, 0.5, -18),
     BackgroundTransparency = 1,
-    Text = "Menus",
+    Image = "rbxassetid://0", -- substitua com seu asset se quiser
+})
+local title = create("TextLabel", {
+    Parent = topBar,
+    Position = UDim2.new(0, 56, 0, 8),
+    Size = UDim2.new(0, 300, 0, 36),
+    Text = "Redz — Tiololo Hub",
+    TextColor3 = Color3.fromRGB(230,230,230),
+    Font = Enum.Font.GothamBold,
     TextSize = 18,
-    Font = Enum.Font.GothamSemibold,
-    TextColor3 = Color3.fromRGB(220,220,220),
-    TextXAlignment = Enum.TextXAlignment.Left,
+    BackgroundTransparency = 1,
+    TextXAlignment = Enum.TextXAlignment.Left
 })
 
-local tabContainer = make("ScrollingFrame", {
-    Parent = sidebar,
-    Position = UDim2.new(0, 8, 0, 44),
-    Size = UDim2.new(1, -16, 1, -52),
+-- Close/minimize buttons
+local btnClose = create("TextButton", {
+    Parent = topBar,
+    Name = "Close",
+    Size = UDim2.new(0, 36, 0, 28),
+    Position = UDim2.new(1, -44, 0.5, -14),
+    Text = "✕",
+    BackgroundTransparency = 0,
+    BackgroundColor3 = Color3.fromRGB(40, 40, 40),
+    TextColor3 = Color3.fromRGB(255,255,255),
+    Font = Enum.Font.Gotham,
+    TextSize = 18,
+    AutoButtonColor = true
+})
+create("UICorner", {Parent = btnClose, CornerRadius = UDim.new(0,6)})
+
+local btnMin = create("TextButton", {
+    Parent = topBar,
+    Name = "Minimize",
+    Size = UDim2.new(0, 36, 0, 28),
+    Position = UDim2.new(1, -88, 0.5, -14),
+    Text = "—",
+    BackgroundTransparency = 0,
+    BackgroundColor3 = Color3.fromRGB(40, 40, 40),
+    TextColor3 = Color3.fromRGB(255,255,255),
+    Font = Enum.Font.Gotham,
+    TextSize = 18,
+    AutoButtonColor = true
+})
+create("UICorner", {Parent = btnMin, CornerRadius = UDim.new(0,6)})
+
+-- Sidebar (tabs)
+local sidebar = create("Frame", {
+    Parent = window,
+    Position = UDim2.new(0, 12, 0, 72),
+    Size = UDim2.new(0, 180, 0, 360),
+    BackgroundColor3 = Color3.fromRGB(30,30,30),
+    BorderSizePixel = 0
+})
+create("UICorner", {Parent = sidebar, CornerRadius = UDim.new(0,8)})
+local sideLayout = create("UIListLayout", {Parent = sidebar, Padding = UDim.new(0,8), SortOrder = Enum.SortOrder.LayoutOrder})
+sideLayout.HorizontalAlignment = Enum.HorizontalAlignment.Center
+sideLayout.VerticalAlignment = Enum.VerticalAlignment.Top
+create("UIPadding", {Parent = sidebar, PaddingTop = UDim.new(0,10), PaddingLeft = UDim.new(0,10), PaddingRight = UDim.new(0,10)})
+
+-- Content area
+local content = create("Frame", {
+    Parent = window,
+    Position = UDim2.new(0, 204, 0, 72),
+    Size = UDim2.new(1, -220, 0, 360),
+    BackgroundColor3 = Color3.fromRGB(20,20,20),
+    BorderSizePixel = 0
+})
+create("UICorner", {Parent = content, CornerRadius = UDim.new(0,8)})
+create("UIPadding", {Parent = content, PaddingTop = UDim.new(0,12), PaddingLeft = UDim.new(0,12), PaddingRight = UDim.new(0,12)})
+
+-- Search bar (top of content)
+local searchBox = create("TextBox", {
+    Parent = content,
+    Name = "Search",
+    Size = UDim2.new(1, -24, 0, 36),
+    Position = UDim2.new(0, 12, 0, 6),
+    BackgroundColor3 = Color3.fromRGB(28,28,28),
+    Text = "",
+    PlaceholderText = "Procurar comando...",
+    TextColor3 = Color3.fromRGB(230,230,230),
+    Font = Enum.Font.Gotham,
+    TextSize = 15,
+    ClearTextOnFocus = false,
+})
+create("UICorner", {Parent = searchBox, CornerRadius = UDim.new(0,6)})
+create("UIStroke", {Parent = searchBox, Thickness = 1, Color = Color3.fromRGB(45,45,45)})
+
+-- Container for controls inside content
+local contentScroll = create("ScrollingFrame", {
+    Parent = content,
+    Name = "Controls",
+    Position = UDim2.new(0, 12, 0, 54),
+    Size = UDim2.new(1, -24, 1, -70),
     BackgroundTransparency = 1,
     ScrollBarThickness = 6,
+    CanvasSize = UDim2.new(0,0,0,0),
 })
-local layout = make("UIListLayout", {Parent = tabContainer, Padding = UDim.new(0, 8), SortOrder = Enum.SortOrder.LayoutOrder})
+local contentLayout = create("UIListLayout", {Parent = contentScroll, Padding = UDim.new(0,8)})
+contentLayout.SortOrder = Enum.SortOrder.LayoutOrder
+create("UIPadding", {Parent = contentScroll, PaddingTop = UDim.new(0,6), PaddingBottom = UDim.new(0,12)})
 
--- Content area (right)
-local content = make("Frame", {
-    Name = "Content",
-    Parent = mainFrame,
-    Position = UDim2.new(0, 250, 0, 86),
-    Size = UDim2.new(1, -270, 0, 400),
-    BackgroundColor3 = Color3.fromRGB(16,16,16),
-    BorderSizePixel = 0,
-})
-make("UICorner", {Parent = content, CornerRadius = UDim.new(0, 8)})
-make("UIStroke", {Parent = content, Thickness = 1, Color = Color3.fromRGB(32,32,32)})
-
--- Search Bar (top of content)
-local searchBox = make("TextBox", {
-    Name = "Search",
-    Parent = content,
-    Position = UDim2.new(0, 12, 0, 12),
-    Size = UDim2.new(0.6, -24, 0, 36),
-    BackgroundColor3 = Color3.fromRGB(24,24,24),
-    BorderSizePixel = 0,
-    PlaceholderText = "Procurar comandos...",
-    Text = "",
-    Font = Enum.Font.Gotham,
-    TextSize = 16,
-    TextColor3 = Color3.fromRGB(220,220,220),
-})
-make("UICorner", {Parent = searchBox, CornerRadius = UDim.new(0, 8)})
-make("UIStroke", {Parent = searchBox, Thickness = 1, Color = Color3.fromRGB(36,36,36)})
-
--- Area where controls will be placed
-local controlsArea = make("ScrollingFrame", {
-    Name = "ControlsArea",
-    Parent = content,
-    Position = UDim2.new(0, 12, 0, 60),
-    Size = UDim2.new(1, -24, 1, -72),
-    BackgroundTransparency = 1,
-    ScrollBarThickness = 8,
-})
-local controlsLayout = make("UIListLayout", {Parent = controlsArea, Padding = UDim.new(0, 10), SortOrder = Enum.SortOrder.LayoutOrder})
-controlsLayout.VerticalAlignment = Enum.VerticalAlignment.Top
-
--- ====== FUNCIONALIDADE BASICA: ADICIONAR TABS E BOTOES ======
+-- Utility: add sidebar tab and corresponding content section
 local tabs = {}
-local currentTab = nil
-
-local function createTab(name)
-    local btn = make("TextButton", {
-        Name = name .. "TabBtn",
-        Parent = tabContainer,
-        Size = UDim2.new(1, 0, 0, 40),
-        BackgroundColor3 = Color3.fromRGB(30,30,30),
-        BorderSizePixel = 0,
-        Text = "  " .. name,
-        TextXAlignment = Enum.TextXAlignment.Left,
-        Font = Enum.Font.Gotham,
-        TextSize = 16,
-        TextColor3 = Color3.fromRGB(220,220,220),
-    })
-    make("UICorner", {Parent = btn, CornerRadius = UDim.new(0, 6)})
-    make("UIStroke", {Parent = btn, Thickness = 1, Color = Color3.fromRGB(28,28,28)})
-
-    btn.MouseButton1Click:Connect(function()
-        -- troca de tab
-        for _, t in pairs(tabs) do
-            t.button.BackgroundColor3 = Color3.fromRGB(30,30,30)
-        end
-        btn.BackgroundColor3 = defaultAccent * 0.9
-        controlsArea:ClearAllChildren()
-        controlsLayout.Parent = controlsArea
-        currentTab = name
-    end)
-
-    tabs[name] = {button = btn}
-    return btn
-end
-
-local function createLabel(text)
-    local lbl = make("TextLabel", {
-        Parent = controlsArea,
-        Size = UDim2.new(1, -10, 0, 24),
-        BackgroundTransparency = 1,
-        Text = text,
-        Font = Enum.Font.GothamSemibold,
-        TextSize = 16,
-        TextColor3 = Color3.fromRGB(220,220,220),
-        TextXAlignment = Enum.TextXAlignment.Left,
-    })
-    return lbl
-end
-
-local function createButton(name, callback)
-    local btn = make("TextButton", {
-        Parent = controlsArea,
-        Size = UDim2.new(1, -10, 0, 44),
-        BackgroundColor3 = Color3.fromRGB(36,36,36),
-        BorderSizePixel = 0,
+local function addTab(name)
+    local tabBtn = create("TextButton", {
+        Parent = sidebar,
+        Size = UDim2.new(1, 0, 0, 44),
         Text = name,
-        Font = Enum.Font.GothamBold,
-        TextSize = 16,
-        TextColor3 = Color3.fromRGB(240,240,240),
+        BackgroundTransparency = 0,
+        BackgroundColor3 = Color3.fromRGB(45,45,45),
+        TextColor3 = Color3.fromRGB(235,235,235),
+        Font = Enum.Font.Gotham,
+        TextSize = 15,
+        AutoButtonColor = true,
     })
-    make("UICorner", {Parent = btn, CornerRadius = UDim.new(0, 8)})
-    make("UIStroke", {Parent = btn, Thickness = 1, Color = Color3.fromRGB(28,28,28)})
+    create("UICorner", {Parent = tabBtn, CornerRadius = UDim.new(0,6)})
+    local tabContent = create("Frame", {
+        Parent = contentScroll,
+        Name = name.."Section",
+        Size = UDim2.new(1,0,0,0),
+        BackgroundTransparency = 1,
+    })
+    local tabLayout = create("UIListLayout", {Parent = tabContent, Padding = UDim.new(0,8)})
+    tabLayout.SortOrder = Enum.SortOrder.LayoutOrder
+    tabs[name] = {btn = tabBtn, frame = tabContent}
+    
+    -- set first tab active
+    if not window:GetAttribute("ActiveTab") then
+        window:SetAttribute("ActiveTab", name)
+        tabBtn.BackgroundColor3 = Color3.fromRGB(60,60,60)
+    end
 
-    btn.MouseButton1Click:Connect(function()
-        if callback then
-            pcall(callback)
+    tabBtn.MouseButton1Click:Connect(function()
+        -- switch visuals
+        for tName, t in pairs(tabs) do
+            t.btn.BackgroundColor3 = Color3.fromRGB(45,45,45)
+            t.frame.Visible = false
         end
+        tabBtn.BackgroundColor3 = Color3.fromRGB(60,60,60)
+        tabContent.Visible = true
+        window:SetAttribute("ActiveTab", name)
+    end)
+
+    -- initially hide non-active
+    tabContent.Visible = (window:GetAttribute("ActiveTab") == name)
+    return tabContent
+end
+
+-- Add common tabs
+local mainTab = addTab("Main")
+local funTab = addTab("Fun")
+local adminTab = addTab("Admin")
+local settingsTab = addTab("Settings")
+
+-- Helper to create a command/button in a tab
+local function addCommand(parent, labelText, callback)
+    local btn = create("TextButton", {
+        Parent = parent,
+        Size = UDim2.new(1, 0, 0, 44),
+        BackgroundColor3 = Color3.fromRGB(40,40,40),
+        Text = labelText,
+        Font = Enum.Font.Gotham,
+        TextSize = 15,
+        TextColor3 = Color3.fromRGB(240,240,240),
+        AutoButtonColor = true,
+    })
+    create("UICorner", {Parent = btn, CornerRadius = UDim.new(0,6)})
+    btn.MouseButton1Click:Connect(function()
+        pcall(callback)
     end)
     return btn
 end
 
--- ====== DRAG DA JANELA ======
-local dragInput, dragStart, startPos
-local dragging = false
+-- Example command placeholders
+addCommand(mainTab, "Open / Close (toggle)", function()
+    local visible = screenGui.Enabled
+    screenGui.Enabled = not visible
+end)
 
-local function updateDrag(input)
+addCommand(mainTab, "Equip Sword (placeholder)", function()
+    -- TODO: Adicione lógica real aqui
+    print("Equip Sword: implementar função real")
+end)
+
+addCommand(funTab, "Morph (placeholder)", function()
+    -- TODO: Adicione lógica real aqui
+    print("Morph: implementar função real")
+end)
+
+addCommand(funTab, "Fling (placeholder)", function()
+    -- TODO: Adicione lógica real aqui
+    print("Fling: implementar função real")
+end)
+
+addCommand(adminTab, "Kill Player (placeholder)", function()
+    -- TODO: Adicione lógica real aqui
+    print("Kill: implementar função real")
+end)
+
+addCommand(adminTab, "Give Admin (placeholder)", function()
+    -- TODO: Adicione lógica real aqui
+    print("Admin: implementar função real")
+end)
+
+-- Settings content
+local themeToggle = create("TextButton", {
+    Parent = settingsTab,
+    Size = UDim2.new(1,0,0,44),
+    Text = "Toggle Dark/Light (placeholder)",
+    BackgroundColor3 = Color3.fromRGB(40,40,40),
+    Font = Enum.Font.Gotham,
+    TextSize = 15,
+    TextColor3 = Color3.fromRGB(240,240,240),
+})
+create("UICorner", {Parent = themeToggle, CornerRadius = UDim.new(0,6)})
+themeToggle.MouseButton1Click:Connect(function()
+    -- Example: simple theme swap
+    if window.BackgroundColor3 == Color3.fromRGB(24,24,24) then
+        window.BackgroundColor3 = Color3.fromRGB(245,245,245)
+        title.TextColor3 = Color3.fromRGB(20,20,20)
+    else
+        window.BackgroundColor3 = Color3.fromRGB(24,24,24)
+        title.TextColor3 = Color3.fromRGB(230,230,230)
+    end
+end)
+
+-- Dynamic canvas sizing helper
+local function updateCanvasSize()
+    local total = 0
+    for i, child in ipairs(contentScroll:GetChildren()) do
+        if child:IsA("Frame") or child:IsA("TextButton") then
+            local layout = child:FindFirstChildOfClass("UIListLayout")
+            total = total + (child.AbsoluteSize.Y + 8)
+        end
+    end
+    contentScroll.CanvasSize = UDim2.new(0,0,0, contentLayout.AbsoluteContentSize.Y + 12)
+end
+contentLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(updateCanvasSize)
+
+-- Search filter
+searchBox:GetPropertyChangedSignal("Text"):Connect(function()
+    local query = string.lower(searchBox.Text)
+    for name, t in pairs(tabs) do
+        for _, c in ipairs(t.frame:GetChildren()) do
+            if c:IsA("TextButton") then
+                local label = string.lower(c.Text or "")
+                c.Visible = label:find(query) ~= nil
+            end
+        end
+    end
+end)
+
+-- Draggable window
+local dragging, dragInput, dragStart, startPos
+local function updateInput(input)
     local delta = input.Position - dragStart
-    mainFrame.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
+    window.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
 end
 
-header.InputBegan:Connect(function(input)
+topBar.InputBegan:Connect(function(input)
     if input.UserInputType == Enum.UserInputType.MouseButton1 then
         dragging = true
         dragStart = input.Position
-        startPos = mainFrame.Position
+        startPos = window.Position
         input.Changed:Connect(function()
             if input.UserInputState == Enum.UserInputState.End then
                 dragging = false
@@ -269,91 +326,50 @@ header.InputBegan:Connect(function(input)
     end
 end)
 
+topBar.InputChanged:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseMovement then
+        dragInput = input
+    end
+end)
+
 game:GetService("UserInputService").InputChanged:Connect(function(input)
-    if dragging and input.UserInputType == Enum.UserInputType.MouseMovement then
-        updateDrag(input)
+    if dragging and input == dragInput then
+        updateInput(input)
     end
 end)
 
--- ====== FUNCOES AUXILIARES VISUAIS ======
-local function openUI()
-    mainFrame.Visible = true
-    shortTween(mainFrame, {Position = UDim2.new(0.5, 0, 0.5, 0), Size = UDim2.new(0, 900, 0, 520)}, 0.25)
-    if blur then
-        shortTween(blur, {Size = 24}, 0.25)
-    end
-end
-
-local function closeUI()
-    if blur then
-        shortTween(blur, {Size = 0}, 0.18)
-    end
-    shortTween(mainFrame, {Position = UDim2.new(0.5, 0, 1.3, 0)}, 0.22)
-    wait(0.22)
-    mainFrame.Visible = false
-end
-
-closeBtn.MouseButton1Click:Connect(function()
-    closeUI()
+-- Minimize and Close functionality
+btnClose.MouseButton1Click:Connect(function()
+    -- close (hide)
+    screenGui.Enabled = false
 end)
-
--- Toggle com a tecla RightControl (apenas exemplo)
-local UserInputService = game:GetService("UserInputService")
-UserInputService.InputBegan:Connect(function(input, processed)
-    if processed then return end
-    if input.KeyCode == Enum.KeyCode.RightControl then
-        if mainFrame.Visible then
-            closeUI()
-        else
-            openUI()
-        end
-    end
-end)
-
--- Criando algumas tabs de exemplo
-createTab("Main")
-createTab("Player")
-createTab("Admin")
-createTab("Settings")
-
--- Seleciona a primeira tab por padrão
-for name, data in pairs(tabs) do
-    -- pega primeira
-    currentTab = name
-    data.button.BackgroundColor3 = defaultAccent * 0.9
-    break
-end
-
--- Preenche controles de exemplo para demonstrar (vai aparecer quando trocar de tab)
-createLabel("Exemplos de comandos:")
-createButton("TP para cima (placeholder)", function()
-    warn("Executei: TP (exemplo)")
-end)
-createButton("Dar espada (placeholder)", function()
-    warn("Executei: Sword (exemplo)")
-end)
-
--- Função pública para adicionar botões programaticamente (use em outros scripts locais)
--- Exemplo de uso: require(script).AddButtonToTab("Admin","Kick Player", função)
-local API = {}
-function API.AddButtonToTab(tabName, btnName, callback)
-    -- encontra tab
-    if tabs[tabName] == nil then
-        -- cria a tab automaticamente
-        createTab(tabName)
-    end
-    -- se a tab é a atual, adiciona direto na área
-    if currentTab == tabName then
-        createButton(btnName, callback)
+btnMin.MouseButton1Click:Connect(function()
+    -- minimize: toggle collapse of content area
+    local collapsed = window:GetAttribute("Collapsed")
+    if not collapsed then
+        -- shrink animation
+        local tween = TweenService:Create(window, TweenInfo.new(0.25), {Size = UDim2.new(0, 760, 0, 60)})
+        tween:Play()
+        window:SetAttribute("Collapsed", true)
     else
-        -- guarda um placeholder invisível (simplificação): quando usuário selecionar a tab, você deve popular.
-        -- Para fins deste template, vamos apenas criar o botão mas escondido (não ideal para projetos grandes)
-        local hiddenBtn = createButton(btnName, callback)
-        hiddenBtn.Visible = false
+        local tween = TweenService:Create(window, TweenInfo.new(0.25), {Size = UDim2.new(0, 760, 0, 460)})
+        tween:Play()
+        window:SetAttribute("Collapsed", false)
     end
-end
+end)
 
--- Exponha também para testes locais
-screenGui:SetAttribute("tiololo_api", true)
+-- Keyboard toggle (RightShift)
+game:GetService("UserInputService").InputBegan:Connect(function(input, processed)
+    if processed then return end
+    if input.KeyCode == Enum.KeyCode.RightShift then
+        screenGui.Enabled = not screenGui.Enabled
+    end
+end)
 
-return API
+-- Small entrance animation
+window.Size = UDim2.new(0, 760, 0, 0)
+local tweenIn = TweenService:Create(window, TweenInfo.new(0.35, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {Size = UDim2.new(0,760,0,460)})
+tweenIn:Play()
+
+-- Final note in output
+print("[RedzStyleHub] Interface criada. Adicione suas funções nos callbacks marcados com TODO.")
