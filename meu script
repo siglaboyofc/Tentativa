@@ -581,3 +581,70 @@ TabPlayers:AddTextBox({
         end
     end
 })
+TabPlayers:AddButton({
+    Name = "Fling Ball",
+    Description = "Fling usando a Soccer Ball (Brookhaven)",
+    Callback = function()
+        local Players = game:GetService("Players")
+        local ReplicatedStorage = game:GetService("ReplicatedStorage")
+        local Workspace = game:GetService("Workspace")
+
+        local player = Players.LocalPlayer
+        local target = Players:FindFirstChild(selectedPlayer)
+        if not target or not target.Character or not target.Character:FindFirstChild("HumanoidRootPart") then
+            warn("Alvo inválido")
+            return
+        end
+
+        -- Pegar a Soccer Ball (Tool1) via Remote
+        local giveTool = ReplicatedStorage:FindFirstChild("RemoteEvents")
+            and ReplicatedStorage.RemoteEvents:FindFirstChild("GiveTool")
+
+        if giveTool then
+            giveTool:FireServer("SoccerBall")
+        end
+
+        task.wait(0.3)
+
+        local ball
+        for _, v in pairs(player.Character:GetChildren()) do
+            if v:IsA("Tool") then
+                ball = v
+                break
+            end
+        end
+
+        if not ball then
+            warn("Bola não encontrada")
+            return
+        end
+
+        ball.Parent = Workspace
+        local handle = ball:FindFirstChild("Handle") or ball:FindFirstChildWhichIsA("BasePart")
+        if not handle then return end
+
+        handle.Massless = true
+        handle.CanCollide = false
+
+        -- Cola a bola no HRP do alvo
+        handle.CFrame = target.Character.HumanoidRootPart.CFrame
+
+        local weld = Instance.new("WeldConstraint")
+        weld.Part0 = handle
+        weld.Part1 = target.Character.HumanoidRootPart
+        weld.Parent = handle
+
+        -- VELOCIDADE INSANA (FLING)
+        local bv = Instance.new("BodyVelocity")
+        bv.MaxForce = Vector3.new(math.huge, math.huge, math.huge)
+        bv.Velocity = Vector3.new(1e308, 1e308, 1e308)
+        bv.Parent = handle
+
+        -- Limpeza
+        task.delay(1.5, function()
+            if bv then bv:Destroy() end
+            if weld then weld:Destroy() end
+            if handle then handle:Destroy() end
+        end)
+    end
+})
