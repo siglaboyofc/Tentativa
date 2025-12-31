@@ -46,7 +46,7 @@ desc.Text = [[
 Nosso script foi lançado oficialmente!
 Agradeço todo o apoio de vocês ❤️
 Divulgue e você pode ganhar até ADMIN 🎩
-Tchauu! ( não temos Discord somente o da Redz que não e meu)
+Tchauu! ( não temos Discord somente o da flinger que não e meu)
 ]]
 desc.Size = UDim2.new(0.9, 0, 0.5, 0)
 desc.Position = UDim2.new(0.05, 0, 0.4, 0)
@@ -171,7 +171,7 @@ local PlayerGui = Player:WaitForChild("PlayerGui")
 
 -- Cria ScreenGui
 local screenGui = Instance.new("ScreenGui")
-screenGui.Name = "RedzHubIntro"
+screenGui.Name = "flingerHubIntro"
 screenGui.ResetOnSpawn = false
 screenGui.IgnoreGuiInset = true
 screenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
@@ -190,7 +190,7 @@ logo.Size = UDim2.new(0.6, 0, 0.2, 0)
 logo.Position = UDim2.new(0.5, 0, -0.2, 0)
 logo.AnchorPoint = Vector2.new(0.5, 0.5)
 logo.BackgroundTransparency = 1
-logo.Text = "{ .•° Redz Hub 2025 🎩 °•. }"
+logo.Text = "{ .•° flinger Hub 2025 🎩 °•. }"
 logo.TextScaled = true
 logo.Font = Enum.Font.GothamBold
 logo.TextColor3 = Color3.fromRGB(255, 0, 0)
@@ -369,12 +369,12 @@ function Notify(imageId, text, time)
 		Label.TextXAlignment = Enum.TextXAlignment.Left
 		Label.ZIndex = 11
 
-		-- Linha inferior “Redz Hub”
+		-- Linha inferior “flinger Hub”
 		local Tag = Instance.new("TextLabel", Frame)
 		Tag.Size = UDim2.new(1, -10, 0, 16)
 		Tag.Position = UDim2.new(0, 10, 1, -18)
 		Tag.BackgroundTransparency = 1
-		Tag.Text = "Redz Hub"
+		Tag.Text = "flinger Hub"
 		Tag.TextColor3 = Color3.fromRGB(255, 0, 70)
 		Tag.TextSize = 13
 		Tag.Font = Enum.Font.GothamSemibold
@@ -420,12 +420,12 @@ function Notify(imageId, text, time)
 end
 
 --// Exemplo de uso:
-Notify(10709806740, "Bem-vindo Este E o Novo Redz Hub feito Por fan", 5)
+Notify(10709806740, "Bem-vindo Este E o Novo flinger Hub ", 5)
 
 local redzlib = loadstring(game:HttpGet("https://raw.githubusercontent.com/Cat558-uz/Testaaa/refs/heads/main/LibTeste.txt"))()
 
 local Window = redzlib:MakeWindow({
-    Title = "Redz hub | brookhaven",
+    Title = "flinger hub | brookhaven",
     SubTitle = "| beta script  GHOST ",
     SaveFolder = "ConfigFolder"
 })
@@ -458,12 +458,7 @@ local Dialog = Window:Dialog({
     }
   })
 
-Tab1:AddDiscordInvite({
-    Name = "Redz Hub | brookhaven",
-    Description = "Join server | Community +13",
-    Logo = "rbxassetid://18751483361",
-    Invite = "https://discord.gg/redz-hub",
-})
+
 
 Tab1:AddSection({Name = "Profile - From You"})
 
