@@ -863,3 +863,14 @@ local function ActiveAutoFling(targetPlayer)
         pcall(flingloopfix)
     end
 end
+local selectedPlayerName = nil
+local Dropdown = TabMain:AddDropdown({
+    Name = "Selecionar Jogador",
+    Description = "Escolha um jogador da lista",
+    Options = PlayerNames,
+    Default = PlayerNames[1] or "",
+    Callback = function(Value)
+        selectedPlayerName = Value
+        print("Jogador selecionado:", Value)
+    end
+})
