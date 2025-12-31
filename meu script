@@ -660,4 +660,37 @@ CallBack = function()
         end
     end)
 end
-})
+})-- Services
+local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
+local player = Players.LocalPlayer
+
+-- Função segura de loadstring
+local function safeLoadString(url)
+    local success, err = pcall(function()
+        loadstring(game:HttpGet(url))()
+    end)
+    if not success then
+        warn("Erro ao executar loadstring:", err)
+    else
+        print("Loadstring executado com sucesso!")
+    end
+end
+
+-- Exemplo de URL raw no GitHub
+local scriptURL = "https://raw.githubusercontent.com/usuario/repo/main/script.lua"
+
+-- Executa de forma segura
+safeLoadString(scriptURL)
+
+-- Exemplo de loop frame-independent usando delta
+local part = Instance.new("Part", workspace)
+part.Position = Vector3.new(0, 5, 0)
+part.Anchored = true
+
+local speed = 10 -- studs por segundo
+
+RunService.RenderStepped:Connect(function(delta)
+    -- delta é o tempo desde o último frame em segundos
+    part.Position = part.Position + Vector3.new(1,0,0) * speed * delta
+end)
