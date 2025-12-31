@@ -1,0 +1,74 @@
+local function flingWithBallV2(targetPlayer)
+if not targetPlayer or not targetPlayer.Character then return end
+    local character = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
+    local myHRP = character:FindFirstChild("HumanoidRootPart")
+    if not myHRP then return end
+    if not equipBola() then return end
+    task.wait(0.5)
+    local args = { [1] = "PlayerWantsToDeleteTool", [2] = "SoccerBall" }
+    pcall(function()
+        ReplicatedStorage:WaitForChild("RE"):WaitForChild("1Clea1rTool1s"):FireServer(unpack(args))
+    end)
+    local workspaceCom = Workspace:FindFirstChild("WorkspaceCom")
+    if not workspaceCom then return end
+    local soccerBalls = workspaceCom:FindFirstChild("001_SoccerBalls")
+    if not soccerBalls then return end
+    soccerBall = soccerBalls:FindFirstChild("Soccer" .. LocalPlayer.Name)
+    if not soccerBall then return end
+    originalProperties = {
+        Anchored = soccerBall.Anchored,
+        CanCollide = soccerBall.CanCollide,
+        CanTouch = soccerBall.CanTouch
+    }
+    soccerBall.Anchored = false
+    soccerBall.CanCollide = true
+    soccerBall.CanTouch = true
+    pcall(function() soccerBall:SetNetworkOwner(nil) end)
+    savedPosition = myHRP.Position
+    running = true
+    local lastFlingTime = 0
+    connection = RunService.Heartbeat:Connect(function()
+        if not running or not targetPlayer.Character then return end
+        local hrp = targetPlayer.Character:FindFirstChild("HumanoidRootPart")
+        local hum = targetPlayer.Character:FindFirstChild("Humanoid")
+        if not hrp or not hum then return end
+        local speed = hrp.Velocity.Magnitude
+        local isMoving = hum.MoveDirection.Magnitude > 0.05
+        local isJumping = hum:GetState() == Enum.HumanoidStateType.Jumping
+        local offset
+        if isMoving or isJumping then
+            local extra = math.clamp(speed / 1.5, 6, 15)
+            offset = hrp.CFrame.LookVector * extra + Vector3.new(0, 1, 0)
+        else
+            local wave = math.sin(tick() * 25) * 4
+            local side = math.cos(tick() * 20) * 1.5
+            offset = Vector3.new(side, 1, wave)
+        end
+        pcall(function()
+            soccerBall.CFrame = CFrame.new(hrp.Position + offset)
+            soccerBall.AssemblyLinearVelocity = Vector3.new(9999, 9999, 9999)
+        end)
+    end)
+    flingConnection = RunService.Heartbeat:Connect(function()
+        if not running or not targetPlayer.Character then return end
+        local hrp = targetPlayer.Character:FindFirstChild("HumanoidRootPart")
+        if not hrp then return end
+        local dist = (soccerBall.Position - hrp.Position).Magnitude
+        if dist < 4 and tick() - lastFlingTime > 0.4 then
+            lastFlingTime = tick()
+            for _, part in ipairs(targetPlayer.Character:GetDescendants()) do
+                if part:IsA("BasePart") then part.CanCollide = false end
+            end
+            local fling = Instance.new("BodyVelocity")
+            fling.MaxForce = Vector3.new(math.huge, math.huge, math.huge)
+            fling.Velocity = Vector3.new(math.random(-5, 5), 5, math.random(-5, 5)).Unit * 500000 + Vector3.new(0, 250000, 0)
+            fling.Parent = hrp
+            task.delay(0.3, function()
+                fling:Destroy()
+                for _, part in ipairs(targetPlayer.Character:GetDescendants()) do
+                    if part:IsA("BasePart") then part.CanCollide = true end
+                end
+            end)
+        end
+    end)
+end
