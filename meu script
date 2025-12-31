@@ -1,28 +1,13 @@
--- script criado BY ghost (corrigido)
+script create BY ghost
 
 -- Serviços
-local Players = game:GetService("Players")
 local TweenService = game:GetService("TweenService")
-local ReplicatedStorage = game:GetService("ReplicatedStorage")
-local Workspace = game:GetService("Workspace")
-local TeleportService = game:GetService("TeleportService")
-local StarterGui = game:GetService("StarterGui")
-
--- Espera até o LocalPlayer existir
+local Players = game:GetService("Players")
 local player = Players.LocalPlayer
-while not player do
-    task.wait()
-    player = Players.LocalPlayer
-end
 
--- Garantir que PlayerGui existe
-local PlayerGui = player:WaitForChild("PlayerGui")
-local gui = Instance.new("ScreenGui")
+-- GUI principal
+local gui = Instance.new("ScreenGui", player:WaitForChild("PlayerGui"))
 gui.Name = "ComemoracaoScreen"
-gui.Parent = PlayerGui
-gui.ResetOnSpawn = false
-gui.IgnoreGuiInset = true
-gui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
 
 local frame = Instance.new("Frame", gui)
 frame.AnchorPoint = Vector2.new(0.5, 0.5)
@@ -43,6 +28,7 @@ stroke.Transparency = 0.4
 local gradient = Instance.new("UIGradient", frame)
 gradient.Rotation = 45
 
+-- Título
 local title = Instance.new("TextLabel", frame)
 title.Text = "✨ OFICIALMENTE LANÇADO ✨"
 title.Size = UDim2.new(1, 0, 0, 60)
@@ -54,8 +40,14 @@ title.Font = Enum.Font.GothamBlack
 title.TextScaled = true
 title.TextTransparency = 1
 
+-- Descrição
 local desc = Instance.new("TextLabel", frame)
-desc.Text = "IDK ESSE SCRIPT É SÓ PEA CAOS :P"
+desc.Text = [[
+Nosso script foi lançado oficialmente!
+Agradeço todo o apoio de vocês ❤️
+Divulgue e você pode ganhar até ADMIN 🎩
+Tchauu! ( não temos Discord somente o da Redz que não e meu)
+]]
 desc.Size = UDim2.new(0.9, 0, 0.5, 0)
 desc.Position = UDim2.new(0.05, 0, 0.4, 0)
 desc.BackgroundTransparency = 1
@@ -65,6 +57,7 @@ desc.TextScaled = true
 desc.TextWrapped = true
 desc.TextTransparency = 1
 
+-- Botão Fechar
 local closeBtn = Instance.new("TextButton", frame)
 closeBtn.Text = "Fechar"
 closeBtn.Size = UDim2.new(0.35, 0, 0.15, 0)
@@ -82,6 +75,8 @@ local btnStroke = Instance.new("UIStroke", closeBtn)
 btnStroke.Color = Color3.fromRGB(255, 255, 255)
 btnStroke.Thickness = 1.5
 btnStroke.Transparency = 0.5
+
+-- Partículas decorativas
 for i = 1, 25 do
 	local spark = Instance.new("Frame", frame)
 	spark.Size = UDim2.new(0, math.random(3,6), 0, math.random(3,6))
@@ -104,11 +99,24 @@ for i = 1, 25 do
 	end)
 end
 
--- Animação de entrada do frame e textos
-TweenService:Create(frame, TweenInfo.new(1, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {Size = UDim2.new(0, 500, 0, 280), BackgroundTransparency = 0}):Play()
-TweenService:Create(title, TweenInfo.new(1, Enum.EasingStyle.Quad, Enum.EasingDirection.Out, 0, false, 0.5), {TextTransparency = 0}):Play()
-TweenService:Create(desc, TweenInfo.new(1.2, Enum.EasingStyle.Quad, Enum.EasingDirection.Out, 0, false, 1.2), {TextTransparency = 0}):Play()
-TweenService:Create(closeBtn, TweenInfo.new(1, Enum.EasingStyle.Quad, Enum.EasingDirection.Out, 0, false, 2), {TextTransparency = 0}):Play()
+-- Animação de entrada
+TweenService:Create(frame, TweenInfo.new(1, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {
+	Size = UDim2.new(0, 500, 0, 280),
+	BackgroundTransparency = 0
+}):Play()
+
+TweenService:Create(title, TweenInfo.new(1, Enum.EasingStyle.Quad, Enum.EasingDirection.Out, 0, false, 0.5), {
+	TextTransparency = 0
+}):Play()
+
+TweenService:Create(desc, TweenInfo.new(1.2, Enum.EasingStyle.Quad, Enum.EasingDirection.Out, 0, false, 1.2), {
+	TextTransparency = 0
+}):Play()
+
+TweenService:Create(closeBtn, TweenInfo.new(1, Enum.EasingStyle.Quad, Enum.EasingDirection.Out, 0, false, 2), {
+	TextTransparency = 0
+}):Play()
+
 -- Loop de cores do fundo
 task.spawn(function()
 	while frame.Parent do
@@ -122,7 +130,7 @@ task.spawn(function()
 	end
 end)
 
--- Hover do botão
+-- Efeito hover no botão
 closeBtn.MouseEnter:Connect(function()
 	TweenService:Create(closeBtn, TweenInfo.new(0.2), {BackgroundColor3 = Color3.fromRGB(255, 90, 90)}):Play()
 end)
@@ -130,7 +138,7 @@ closeBtn.MouseLeave:Connect(function()
 	TweenService:Create(closeBtn, TweenInfo.new(0.2), {BackgroundColor3 = Color3.fromRGB(255, 60, 60)}):Play()
 end)
 
--- Pulsante
+-- Efeito pulsante no botão
 task.spawn(function()
 	while closeBtn.Parent do
 		TweenService:Create(closeBtn, TweenInfo.new(0.8, Enum.EasingStyle.Sine, Enum.EasingDirection.Out), {Size = UDim2.new(0.37, 0, 0.16, 0)}):Play()
@@ -140,24 +148,155 @@ task.spawn(function()
 	end
 end)
 
--- Fechar GUI
+-- Fechar
 closeBtn.MouseButton1Click:Connect(function()
-	TweenService:Create(frame, TweenInfo.new(0.6, Enum.EasingStyle.Back, Enum.EasingDirection.In), {Size = UDim2.new(0, 0, 0, 0), BackgroundTransparency = 1}):Play()
+	TweenService:Create(frame, TweenInfo.new(0.6, Enum.EasingStyle.Back, Enum.EasingDirection.In), {
+		Size = UDim2.new(0, 0, 0, 0),
+		BackgroundTransparency = 1
+	}):Play()
 	TweenService:Create(title, TweenInfo.new(0.3), {TextTransparency = 1}):Play()
 	TweenService:Create(desc, TweenInfo.new(0.3), {TextTransparency = 1}):Play()
 	TweenService:Create(closeBtn, TweenInfo.new(0.3), {TextTransparency = 1}):Play()
 	task.wait(0.6)
 	gui:Destroy()
 end)
+
+wait(4)
+
+-- script create BY ghost
+local TweenService = game:GetService("TweenService")
+local Players = game:GetService("Players")
+local Player = Players.LocalPlayer
+local PlayerGui = Player:WaitForChild("PlayerGui")
+
+-- Cria ScreenGui
+local screenGui = Instance.new("ScreenGui")
+screenGui.Name = "RedzHubIntro"
+screenGui.ResetOnSpawn = false
+screenGui.IgnoreGuiInset = true
+screenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+screenGui.Parent = PlayerGui
+
+-- Fundo preto
+local bg = Instance.new("Frame")
+bg.Size = UDim2.fromScale(1, 1)
+bg.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+bg.BackgroundTransparency = 1
+bg.Parent = screenGui
+
+-- Texto principal
+local logo = Instance.new("TextLabel")
+logo.Size = UDim2.new(0.6, 0, 0.2, 0)
+logo.Position = UDim2.new(0.5, 0, -0.2, 0)
+logo.AnchorPoint = Vector2.new(0.5, 0.5)
+logo.BackgroundTransparency = 1
+logo.Text = "{ .•° Redz Hub 2025 🎩 °•. }"
+logo.TextScaled = true
+logo.Font = Enum.Font.GothamBold
+logo.TextColor3 = Color3.fromRGB(255, 0, 0)
+logo.TextStrokeTransparency = 0.3
+logo.TextStrokeColor3 = Color3.fromRGB(0, 0, 0)
+logo.Parent = screenGui
+
+local gradient = Instance.new("UIGradient", logo)
+gradient.Color = ColorSequence.new{
+	ColorSequenceKeypoint.new(0, Color3.fromRGB(255, 0, 0)),
+	ColorSequenceKeypoint.new(0.5, Color3.fromRGB(60, 0, 0)),
+	ColorSequenceKeypoint.new(1, Color3.fromRGB(255, 0, 0))
+}
+gradient.Rotation = 45
+
+-- Texto secundário animado
+local subtitle = Instance.new("TextLabel")
+subtitle.Size = UDim2.new(0, 200, 0, 25)
+subtitle.Position = UDim2.new(0.5, 0, 0.58, 0)
+subtitle.AnchorPoint = Vector2.new(0.5, 0.5)
+subtitle.BackgroundTransparency = 1
+subtitle.Text = "Not From Oficial"
+subtitle.TextColor3 = Color3.fromRGB(255, 255, 255)
+subtitle.TextTransparency = 1
+subtitle.TextScaled = true
+subtitle.Font = Enum.Font.Gotham
+subtitle.Parent = screenGui
+
+-- Barra de carregamento
+local loadFrame = Instance.new("Frame")
+loadFrame.Size = UDim2.new(0, 0, 0.02, 0)
+loadFrame.Position = UDim2.new(0.5, 0, 0.85, 0)
+loadFrame.AnchorPoint = Vector2.new(0.5, 0)
+loadFrame.BackgroundColor3 = Color3.fromRGB(200, 0, 0)
+loadFrame.BorderSizePixel = 0
+loadFrame.Parent = screenGui
+
+local function tween(obj, info, props)
+	return TweenService:Create(obj, info, props)
+end
+
+-- Fade-in fundo
+tween(bg, TweenInfo.new(0.5), {BackgroundTransparency = 0}):Play()
+task.wait(0.6)
+
+-- Entrada do logo
+tween(logo, TweenInfo.new(1, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {
+	Position = UDim2.new(0.5, 0, 0.4, 0)
+}):Play()
+
+task.wait(1)
+tween(logo, TweenInfo.new(0.3, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {
+	TextSize = logo.TextSize * 1.05
+}):Play()
+
+-- Fade-in do subtítulo + animação de pulsar
+tween(subtitle, TweenInfo.new(1), {TextTransparency = 0}):Play()
+task.wait(1.2)
+task.spawn(function()
+	while subtitle and subtitle.Parent do
+		tween(subtitle, TweenInfo.new(1.2, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut), {TextTransparency = 0.5}):Play()
+		task.wait(1.2)
+		tween(subtitle, TweenInfo.new(1.2, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut), {TextTransparency = 0}):Play()
+		task.wait(1.2)
+	end
+end)
+
+-- Barra de carregamento
+tween(loadFrame, TweenInfo.new(2, Enum.EasingStyle.Linear), {
+	Size = UDim2.new(0.8, 0, 0.02, 0)
+}):Play()
+
+-- Som
+local sound = Instance.new("Sound")
+sound.SoundId = "rbxassetid://107004225739474"
+sound.Volume = 2
+sound.Parent = screenGui
+sound:Play()
+
+-- Saída
+task.wait(2.5)
+tween(bg, TweenInfo.new(0.8), {BackgroundTransparency = 1}):Play()
+tween(logo, TweenInfo.new(0.8), {TextTransparency = 1}):Play()
+tween(subtitle, TweenInfo.new(0.8), {TextTransparency = 1}):Play()
+tween(loadFrame, TweenInfo.new(0.8), {BackgroundTransparency = 1}):Play()
+
+task.wait(1)
+screenGui:Destroy()
+
+
+local TweenService = game:GetService("TweenService")
+local Player = game.Players.LocalPlayer
+local PlayerGui = Player:WaitForChild("PlayerGui")
+
+-- GUI principal
 local NotifyGui = PlayerGui:FindFirstChild("NotifyGui") or Instance.new("ScreenGui")
 NotifyGui.Name = "NotifyGui"
 NotifyGui.Parent = PlayerGui
 NotifyGui.ResetOnSpawn = false
 
+-- Pasta das notificações
 local NotifFolder = NotifyGui:FindFirstChild("NotifFolder") or Instance.new("Folder")
 NotifFolder.Name = "NotifFolder"
 NotifFolder.Parent = NotifyGui
 
+-- Configurações visuais
 local NOTIF_WIDTH = 280
 local NOTIF_HEIGHT = 70
 local NOTIF_SPACING = 8
@@ -170,21 +309,20 @@ function Notify(imageId, text, time)
 		imageId = imageId or 6031075932
 		text = text or "Notificação"
 
-		-- Move notificações existentes
 		for _, oldNotif in ipairs(NotifFolder:GetChildren()) do
 			if oldNotif:IsA("Frame") then
 				local newY = oldNotif.Position.Y.Offset - (NOTIF_HEIGHT + NOTIF_SPACING)
-				TweenService:Create(oldNotif, TweenInfo.new(0.25, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {Position = UDim2.new(1, -300, 1, newY)}):Play()
+				TweenService:Create(oldNotif, TweenInfo.new(0.25, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {
+					Position = UDim2.new(1, -300, 1, newY)
+				}):Play()
 			end
 		end
 
-		-- Limite máximo de notificações
 		if #NotifFolder:GetChildren() >= MAX_NOTIFS then
 			local oldest = NotifFolder:GetChildren()[1]
 			if oldest then oldest:Destroy() end
 		end
 
-		-- Criar nova notificação
 		local Frame = Instance.new("Frame")
 		Frame.Size = UDim2.new(0, NOTIF_WIDTH, 0, NOTIF_HEIGHT)
 		Frame.Position = UDim2.new(1, 300, 1, -80)
@@ -204,9 +342,13 @@ function Notify(imageId, text, time)
 		UIStroke.Transparency = 0.05
 
 		local Gradient = Instance.new("UIGradient", Frame)
-		Gradient.Color = ColorSequence.new({ColorSequenceKeypoint.new(0, Color3.fromRGB(20, 20, 20)), ColorSequenceKeypoint.new(1, Color3.fromRGB(60, 0, 30))})
+		Gradient.Color = ColorSequence.new({
+			ColorSequenceKeypoint.new(0, Color3.fromRGB(20, 20, 20)),
+			ColorSequenceKeypoint.new(1, Color3.fromRGB(60, 0, 30))
+		})
 		Gradient.Rotation = 0
 
+		-- Ícone
 		local Image = Instance.new("ImageLabel", Frame)
 		Image.Size = UDim2.new(0, 50, 0, 50)
 		Image.Position = UDim2.new(0, 10, 0.5, -25)
@@ -214,6 +356,7 @@ function Notify(imageId, text, time)
 		Image.Image = "rbxassetid://" .. tostring(imageId)
 		Image.ZIndex = 11
 
+		-- Texto principal
 		local Label = Instance.new("TextLabel", Frame)
 		Label.Size = UDim2.new(1, -75, 1, -10)
 		Label.Position = UDim2.new(0, 65, 0, 5)
@@ -226,19 +369,22 @@ function Notify(imageId, text, time)
 		Label.TextXAlignment = Enum.TextXAlignment.Left
 		Label.ZIndex = 11
 
+		-- Linha inferior “Redz Hub”
 		local Tag = Instance.new("TextLabel", Frame)
 		Tag.Size = UDim2.new(1, -10, 0, 16)
 		Tag.Position = UDim2.new(0, 10, 1, -18)
 		Tag.BackgroundTransparency = 1
-		Tag.Text = "flinger Hub"
+		Tag.Text = "Redz Hub"
 		Tag.TextColor3 = Color3.fromRGB(255, 0, 70)
 		Tag.TextSize = 13
 		Tag.Font = Enum.Font.GothamSemibold
 		Tag.TextXAlignment = Enum.TextXAlignment.Right
 		Tag.ZIndex = 12
 
-		-- Efeito entrada
-		TweenService:Create(Frame, TweenInfo.new(0.35, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {Position = BASE_POSITION}):Play()
+		-- Efeito de entrada
+		TweenService:Create(Frame, TweenInfo.new(0.35, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {
+			Position = BASE_POSITION
+		}):Play()
 
 		-- Som
 		local Sound = Instance.new("Sound", Frame)
@@ -246,7 +392,7 @@ function Notify(imageId, text, time)
 		Sound.Volume = 0.8
 		Sound:Play()
 
-		-- Barra de progresso
+		-- Efeito de tempo (barra de progresso)
 		local Bar = Instance.new("Frame", Frame)
 		Bar.BackgroundColor3 = Color3.fromRGB(255, 0, 70)
 		Bar.BorderSizePixel = 0
@@ -254,11 +400,15 @@ function Notify(imageId, text, time)
 		Bar.Position = UDim2.new(0, 0, 1, -2)
 		Bar.ZIndex = 13
 
-		TweenService:Create(Bar, TweenInfo.new(time, Enum.EasingStyle.Linear), {Size = UDim2.new(0, 0, 0, 2)}):Play()
+		TweenService:Create(Bar, TweenInfo.new(time, Enum.EasingStyle.Linear), {
+			Size = UDim2.new(0, 0, 0, 2)
+		}):Play()
 
 		-- Saída
 		task.delay(time, function()
-			TweenService:Create(Frame, TweenInfo.new(0.35, Enum.EasingStyle.Quart, Enum.EasingDirection.In), {Position = UDim2.new(1, 300, 1, Frame.Position.Y.Offset)}):Play()
+			TweenService:Create(Frame, TweenInfo.new(0.35, Enum.EasingStyle.Quart, Enum.EasingDirection.In), {
+				Position = UDim2.new(1, 300, 1, Frame.Position.Y.Offset)
+			}):Play()
 			task.wait(0.35)
 			Frame:Destroy()
 		end)
@@ -267,12 +417,16 @@ function Notify(imageId, text, time)
 	if not ok then
 		warn("Erro na notificação:", err)
 	end
-end-- Carrega biblioteca externa (verifique se URL está acessível)
+end
+
+--// Exemplo de uso:
+Notify(10709806740, "Bem-vindo Este E o Novo Redz Hub feito Por fan", 5)
+
 local redzlib = loadstring(game:HttpGet("https://raw.githubusercontent.com/Cat558-uz/Testaaa/refs/heads/main/LibTeste.txt"))()
 
 local Window = redzlib:MakeWindow({
-    Title = "flinger hub | brookhaven",
-    SubTitle = "| beta script  ODY ",
+    Title = "Redz hub | brookhaven",
+    SubTitle = "| beta script  GHOST ",
     SaveFolder = "ConfigFolder"
 })
 
@@ -283,24 +437,37 @@ Window:AddMinimizeButton({
 
 -- Aba Home
 local Tab1 = Window:MakeTab({ "| Início", "menu" })
+
+
 local Dialog = Window:Dialog({
-    Title = "Pergunta",
+    Title = "Pergunta ",
     Text = "Você está Em um Servidor ...",
     Options = {
-        {"Brasileiro", function()
-            Notify(10709806740, "): que pena, (: mais você consegue usar só que Pode falhar Opções Use vpn", 5)
-        end},
-        {"Ingles", function()
-            Notify(10709806740, "ótimo com base em isso qualquer opção irar pegar 100%", 5)
-        end},
-        {"Não sei ...", function()
-            Notify(10709806740, "então Use VPN Para melhor Utilização", 5)
-        end}
+      {"Brasileiro", function()
+        Notify(10709806740, "): que pena, (: mais você consegue usar só que Pode falhar Opções Use vpn", 5)
+        
+      end},
+      {"Ingles", function()
+        Notify(10709806740, "ótimo com base em isso qualquer opção irar pegar 100%", 5)
+        
+      end},
+      {"Não sei ...", function()
+        Notify(10709806740, "então Use VPN Para melhor Utilização", 5)
+        
+      end}
     }
+  })
+
+Tab1:AddDiscordInvite({
+    Name = "Redz Hub | brookhaven",
+    Description = "Join server | Community +13",
+    Logo = "rbxassetid://18751483361",
+    Invite = "https://discord.gg/redz-hub",
 })
+
 Tab1:AddSection({Name = "Profile - From You"})
 
--- Detecta executor
+
 local function detectExecutor()
     if identifyexecutor then
         return identifyexecutor()
@@ -320,38 +487,64 @@ local function detectExecutor()
 end
 
 local executorName = detectExecutor()
-Tab1:AddParagraph({"Executor", executorName})
 
--- Nickname
-Tab1:AddParagraph({"Nickname", player.Name})
+
+
+local Paragraph = Tab1:AddParagraph({"Execultor", executorName})
+
+local Players = game:GetService("Players")
+local player = Players.LocalPlayer
+
+-- Pega nickname do jogador
+local nickname = player.Name 
+
+-- Novo bloco igual ao do Executor
+Tab1:AddParagraph({"Nickname", nickname})
 Tab1:AddParagraph({"Version", "[almost]"})
 
--- Seção Server
-local Section = Tab1:AddSection({"Server"})
+local Section = Tab1:AddSection({" Server"})
 
 Tab1:AddButton({
     Name = "Rejoin Server",
     Callback = function()
-        Notify(10709806740, "Espere.....", 3)
-        TeleportService:Teleport(game.PlaceId, player)
+    
+    Notify(10709806740, "Espere.....", 3)
+    
+        local TeleportService = game:GetService("TeleportService")
+        local Players = game:GetService("Players")
+
+        TeleportService:Teleport(game.PlaceId, Players.LocalPlayer)
     end
 })
 
 Tab1:AddButton({
     Name = "Abrir Console",
     Callback = function()
-        print("ola você abriu o console [" .. player.Name .. "]")
+        local player = game:GetService("Players").LocalPlayer
+        print("ola você abriu o. console[" .. player.Name .. "]")
+
+        local StarterGui = game:GetService("StarterGui")
         pcall(function()
             StarterGui:SetCore("DevConsoleVisible", true)
         end)
     end
-})
+})  
 
-Tab1:AddParagraph({"Aviso", "obrigado por usar"})
+local Paragraph = Tab1:AddParagraph({"Aviso", "obrigado por usar"})
+
 local TabPlayers = Window:MakeTab({ "| Players", "User" })
+
+
+
 TabPlayers:AddSection({Name = " Target ( INSERT ONLY NAME )"})
 
+local viewing = false
+local loopTP = false
 local selectedPlayer = nil
+local cam = workspace.CurrentCamera
+local player = game.Players.LocalPlayer
+
+-- blockedUsers para devs da hub
 local blockedUsers = {
     ["h26337"] = true,
     ["ex_toddy"] = true,
@@ -361,86 +554,51 @@ local blockedUsers = {
     ["kit_cynALT"] = true,
     ["MeKS3"] = true
 }
-
--- Função para encontrar jogador
-local function findPlayerByName(name)
-    name = name:lower()
-    for _, plr in ipairs(Players:GetPlayers()) do
-        if plr.Name:lower():sub(1, #name) == name then
-            return plr.Name
-        end
-    end
-    return nil
-end
-
--- Caixa de texto para definir alvo
-TabPlayers:AddTextBox({
-    Name = "Target Player Name >",
-    Default = "lolexploiter123321",
-    TextDisappear = false,
-    Callback = function(Value)
-        local match = findPlayerByName(Value)
-        if match then
-            if blockedUsers[match] then
-                player:Kick("Você Não Pode selecionar um ADM.")
-                selectedPlayer = nil
-            else
-                selectedPlayer = match
-                print("FOUND your USER:", selectedPlayer)
-                Notify(10709806740, "✓ sucesso Player Localized", 1.5)
-            end
-        else
-            print("No Found.")
-            Notify(10709806740, "? erro Player Insert The NAME <", 3)
-        end
-    end
-})
 TabPlayers:AddButton({
-    Name = "Fling Ball",
-    Description = "Fling Ball seguro para o jogador selecionado",
+    Name = "Fling Ball  ",
+    Description = "Fling Ball, Make the Ball Flings The player",
     Callback = function()
-        if not selectedPlayer then
-            Notify(10709806740, "Selecione um jogador antes de usar o Fling Ball!", 2)
-            return
-        end
+        local Players = game:GetService("Players")
+        local ReplicatedStorage = game:GetService("ReplicatedStorage")
+        local Workspace = game:GetService("Workspace")
 
+        local player = Players.LocalPlayer
         local targetPlayer = Players:FindFirstChild(selectedPlayer)
+        print("FOUND your USER:", selectedPlayer)
+
         if not targetPlayer or not targetPlayer.Character then
-            Notify(10709806740, "Jogador alvo inválido ou não carregado!", 2)
+            warn("Jogador alvo invÃ¡lido.")
             return
         end
 
         local character = player.Character or player.CharacterAdded:Wait()
         local backpack = player:WaitForChild("Backpack")
-        local remote = ReplicatedStorage:FindFirstChild("RE") and ReplicatedStorage.RE:FindFirstChild("1Too1l")
-        if remote and remote:IsA("RemoteFunction") then
-            remote:InvokeServer("PickingTools", "SoccerBall")
-        else
-            Notify(10709806740, "Falha ao pegar a bola! RemoteFunction não encontrada.", 2)
-            return
+        local ServerBalls = Workspace:WaitForChild("WorkspaceCom"):WaitForChild("001_SoccerBalls")
+
+        -- Solicita e equipa a bola
+        if not backpack:FindFirstChild("SoccerBall") and not character:FindFirstChild("SoccerBall") then
+            ReplicatedStorage.RE:FindFirstChild("1Too1l"):InvokeServer("PickingTools", "SoccerBall")
         end
 
-        -- Espera bola equipar
         repeat task.wait() until backpack:FindFirstChild("SoccerBall") or character:FindFirstChild("SoccerBall")
-        local ballTool = backpack:FindFirstChild("SoccerBall") or character:FindFirstChild("SoccerBall")
-        if ballTool then ballTool.Parent = character end
 
-        -- Espera ServerBalls existir
-        local ServerBalls = Workspace:WaitForChild("WorkspaceCom"):WaitForChild("001_SoccerBalls")
+        local ballTool = backpack:FindFirstChild("SoccerBall")
+        if ballTool then
+            ballTool.Parent = character
+        end
+
         repeat task.wait() until ServerBalls:FindFirstChild("Soccer" .. player.Name)
         local Ball = ServerBalls:FindFirstChild("Soccer" .. player.Name)
 
-        -- Configurações físicas seguras
         Ball.CanCollide = false
         Ball.Massless = true
         Ball.CustomPhysicalProperties = PhysicalProperties.new(0.0001, 0, 0)
 
+        -- Aplicar o fling
         local tchar = targetPlayer.Character
-        local troot = tchar:FindFirstChild("HumanoidRootPart")
-        if not troot then
-            Notify(10709806740, "HumanoidRootPart do alvo não encontrado!", 2)
-            return
-        end
+        local troot = tchar and tchar:FindFirstChild("HumanoidRootPart")
+        local thum = tchar and tchar:FindFirstChild("Humanoid")
+        if not troot or not thum then return end
 
         if Ball:FindFirstChildWhichIsA("BodyVelocity") then
             Ball:FindFirstChildWhichIsA("BodyVelocity"):Destroy()
@@ -448,19 +606,144 @@ TabPlayers:AddButton({
 
         local bv = Instance.new("BodyVelocity")
         bv.Name = "FlingPower"
-        bv.Velocity = Vector3.new(1e6, 1e6, 1e6)
+        bv.Velocity = Vector3.new(9e8, 9e8, 9e8)
         bv.MaxForce = Vector3.new(math.huge, math.huge, math.huge)
-        bv.P = 1e6
+        bv.P = 9e900
         bv.Parent = Ball
 
-        -- Cola a bola no alvo
+        -- loop a colar no alvo
         task.spawn(function()
-            while Ball.Parent and troot.Parent do
-                Ball.CFrame = troot.CFrame + Vector3.new(0, 5, 0)
-                task.wait(0.03)
-            end
+            repeat
+                if troot.Velocity.Magnitude > 0 then
+                    local pos = troot.Position + (troot.Velocity / 1.5)
+                    Ball.CFrame = CFrame.new(pos)
+                    Ball.Orientation += Vector3.new(45, 60, 30)
+                else
+                    for _, v in pairs(tchar:GetChildren()) do
+                        if v:IsA("BasePart") and v.CanCollide and not v.Anchored then
+                            Ball.CFrame = v.CFrame
+                            task.wait(1/6000)
+                        end
+                    end
+                end
+                task.wait(1/6000)
+            until troot.Velocity.Magnitude > 1000 or thum.Health <= 0 or not tchar:IsDescendantOf(Workspace) or targetPlayer.Parent ~= Players
         end)
+    end
+})
+TabPlayers:AddSection({ " Orbit TROLL" })
 
-        Notify(10709806740, "Fling Ball ativado!", 2)
+-- Config global
+OrbitSettings = {
+    Speed = 2,
+    Distance = 6,
+    Height = 0,
+    Fling = false
+}
+
+
+-- Sliders
+TabPlayers:AddSlider({
+    Name = "Speed Spin",
+    Min = 1,
+    Max = 20,
+    Default = 2,
+    Callback = function(Value)
+        OrbitSettings.Speed = Value
+    end
+})
+
+TabPlayers:AddSlider({
+    Name = "Distance",
+    Min = 1,
+    Max = 20,
+    Default = 6,
+    Callback = function(Value)
+        OrbitSettings.Distance = Value
+    end
+})
+
+TabPlayers:AddSlider({
+    Name = "Height",
+    Min = -10,
+    Max = 10,
+    Default = 0,
+    Callback = function(Value)
+        OrbitSettings.Height = Value
+    end
+})
+---------------------------------------------------
+-- Função global que cria a orbita
+function orbitBall(targetChar, modeName)
+    if not targetChar or not targetChar:FindFirstChild("HumanoidRootPart") then return end
+
+    player = game:GetService("Players").LocalPlayer
+    character = player.Character or player.CharacterAdded:Wait()
+    backpack = player:WaitForChild("Backpack")
+    serverBalls = workspace:WaitForChild("WorkspaceCom"):WaitForChild("001_SoccerBalls")
+
+    -- garantir bola
+    if not backpack:FindFirstChild("SoccerBall") and not character:FindFirstChild("SoccerBall") then
+        game:GetService("ReplicatedStorage").RE:FindFirstChild("1Too1l"):InvokeServer("PickingTools", "SoccerBall")
+    end
+    repeat task.wait() until backpack:FindFirstChild("SoccerBall") or character:FindFirstChild("SoccerBall")
+    ballTool = backpack:FindFirstChild("SoccerBall")
+    if ballTool then ballTool.Parent = character end
+
+    repeat task.wait() until serverBalls:FindFirstChild("Soccer"..player.Name)
+    orb = serverBalls:FindFirstChild("Soccer"..player.Name)
+    if not orb then return end
+    orb.Name = modeName
+
+    orb.CanCollide = false
+    orb.Massless = true
+    orb.CustomPhysicalProperties = PhysicalProperties.new(0.0001, 0, 0)
+
+    if orb:FindFirstChild("FlingPower") then orb.FlingPower:Destroy() end
+
+    -- só flinga se OrbitSettings.Fling == true
+    if OrbitSettings.Fling then
+        bv = Instance.new("BodyVelocity")
+        bv.Name = "FlingPower"
+        bv.Velocity = Vector3.new(9e8, 9e8, 9e8)
+        bv.MaxForce = Vector3.new(math.huge, math.huge, math.huge)
+        bv.P = 9e900
+        bv.Parent = orb
+    end
+
+    loop = Instance.new("BindableEvent")
+    loop.Name = modeName.."Loop"
+    loop.Parent = character
+
+    task.spawn(function()
+        while loop.Parent and orb and orb.Parent and targetChar and targetChar.Parent do
+            angle = tick() * OrbitSettings.Speed
+            offset = CFrame.new(
+                math.cos(angle) * OrbitSettings.Distance,
+                OrbitSettings.Height,
+                math.sin(angle) * OrbitSettings.Distance
+            )
+            orb.CFrame = targetChar.HumanoidRootPart.CFrame * offset
+            task.wait(1/60)
+        end
+    end)
+end
+
+---------------------------------------------------
+-- Toggles
+TabPlayers:AddToggle({
+    Name = "Orbit Ball",
+    Description = "A bola gira em volta de você.",
+    Default = false,
+    Callback = function(state)
+        char = game:GetService("Players").LocalPlayer.Character
+        loop = char and char:FindFirstChild("OrbitBallLoop")
+        if state then
+            orbitBall(char, "OrbitBall")
+        elseif loop then
+            loop:Destroy()
+            orb = workspace.WorkspaceCom["001_SoccerBalls"]:FindFirstChild("OrbitBall")
+            if orb then orb:Destroy() end
+        end
     end
 })
