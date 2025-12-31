@@ -581,50 +581,65 @@ TabPlayers:AddTextBox({
         end
     end
 })TabPlayers:AddButton({
-    Name = "Fling Ball  ",
-    Description = "Fling Ball, Make the Ball Flings The player",
+    Name = "Fling Ball",
+    Description = "Fling Ball seguro para o jogador selecionado",
     Callback = function()
         local Players = game:GetService("Players")
         local ReplicatedStorage = game:GetService("ReplicatedStorage")
         local Workspace = game:GetService("Workspace")
 
         local player = Players.LocalPlayer
-        local targetPlayer = Players:FindFirstChild(selectedPlayer)
-        print("FOUND your USER:", selectedPlayer)
 
+        -- Verifica se existe player selecionado
+        if not selectedPlayer then
+            warn("Nenhum player selecionado!")
+            Notify(10709806740, "Selecione um jogador antes de usar o Fling Ball!", 2)
+            return
+        end
+
+        local targetPlayer = Players:FindFirstChild(selectedPlayer)
         if not targetPlayer or not targetPlayer.Character then
-            warn("Jogador alvo invÃ¡lido.")
+            warn("Jogador alvo inválido.")
+            Notify(10709806740, "Jogador alvo inválido ou não carregado!", 2)
             return
         end
 
         local character = player.Character or player.CharacterAdded:Wait()
         local backpack = player:WaitForChild("Backpack")
-        local ServerBalls = Workspace:WaitForChild("WorkspaceCom"):WaitForChild("001_SoccerBalls")
 
-        -- Solicita e equipa a bola
-        if not backpack:FindFirstChild("SoccerBall") and not character:FindFirstChild("SoccerBall") then
-            ReplicatedStorage.RE:FindFirstChild("1Too1l"):InvokeServer("PickingTools", "SoccerBall")
+        -- Pega RemoteFunction de forma segura
+        local remote = ReplicatedStorage:FindFirstChild("RE") and ReplicatedStorage.RE:FindFirstChild("1Too1l")
+        if remote and remote:IsA("RemoteFunction") then
+            remote:InvokeServer("PickingTools", "SoccerBall")
+        else
+            warn("RemoteFunction '1Too1l' não encontrada!")
+            Notify(10709806740, "Falha ao pegar a bola! RemoteFunction não encontrada.", 2)
+            return
         end
 
+        -- Espera a bola equipar
         repeat task.wait() until backpack:FindFirstChild("SoccerBall") or character:FindFirstChild("SoccerBall")
+        local ballTool = backpack:FindFirstChild("SoccerBall") or character:FindFirstChild("SoccerBall")
+        if ballTool then ballTool.Parent = character end
 
-        local ballTool = backpack:FindFirstChild("SoccerBall")
-        if ballTool then
-            ballTool.Parent = character
-        end
-
+        -- Espera o ServerBalls existir
+        local ServerBalls = Workspace:WaitForChild("WorkspaceCom"):WaitForChild("001_SoccerBalls")
         repeat task.wait() until ServerBalls:FindFirstChild("Soccer" .. player.Name)
         local Ball = ServerBalls:FindFirstChild("Soccer" .. player.Name)
 
+        -- Configurações físicas seguras
         Ball.CanCollide = false
         Ball.Massless = true
         Ball.CustomPhysicalProperties = PhysicalProperties.new(0.0001, 0, 0)
 
-        -- Aplicar o fling
+        -- Aplica BodyVelocity
         local tchar = targetPlayer.Character
-        local troot = tchar and tchar:FindFirstChild("HumanoidRootPart")
-        local thum = tchar and tchar:FindFirstChild("Humanoid")
-        if not troot or not thum then return end
+        local troot = tchar:FindFirstChild("HumanoidRootPart")
+        local thum = tchar:FindFirstChild("Humanoid")
+        if not troot or not thum then
+            warn("HumanoidRootPart ou Humanoid do alvo não encontrado!")
+            return
+        end
 
         if Ball:FindFirstChildWhichIsA("BodyVelocity") then
             Ball:FindFirstChildWhichIsA("BodyVelocity"):Destroy()
@@ -632,28 +647,19 @@ TabPlayers:AddTextBox({
 
         local bv = Instance.new("BodyVelocity")
         bv.Name = "FlingPower"
-        bv.Velocity = Vector3.new(18e8, 18e8, 18e8)
+        bv.Velocity = Vector3.new(1e6, 1e6, 1e6) -- força segura
         bv.MaxForce = Vector3.new(math.huge, math.huge, math.huge)
-        bv.P = 18e800
+        bv.P = 1e6
         bv.Parent = Ball
 
-        -- loop a colar no alvo
+        -- Cola a bola no alvo de forma contínua
         task.spawn(function()
-            repeat
-                if troot.Velocity.Magnitude > 0 then
-                    local pos = troot.Position + (troot.Velocity / 1.5)
-                    Ball.CFrame = CFrame.new(pos)
-                    Ball.Orientation += Vector3.new(45, 60, 30)
-                else
-                    for _, v in pairs(tchar:GetChildren()) do
-                        if v:IsA("BasePart") and v.CanCollide and not v.Anchored then
-                            Ball.CFrame = v.CFrame
-                            task.wait(1/6000)
-                        end
-                    end
-                end
-                task.wait(1/6000)
-            until troot.Velocity.Magnitude > 1000 or thum.Health <= 0 or not tchar:IsDescendantOf(Workspace) or targetPlayer.Parent ~= Players
+            while Ball.Parent and troot.Parent do
+                Ball.CFrame = troot.CFrame + Vector3.new(0, 5, 0) -- 5 studs acima
+                task.wait(0.03)
+            end
         end)
+
+        Notify(10709806740, "Fling Ball ativado!", 2)
     end
 })
