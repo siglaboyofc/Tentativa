@@ -41,7 +41,10 @@ title.TextTransparency = 1
 -- Descrição
 local desc = Instance.new("TextLabel", frame)
 desc.Text = [[
-bem orbigado redz pela wind UI deixo créditos a eles e o discord deles entrem lá é muito boa essa hub:D (OBRIGADO REDZ)
+Nosso script foi lançado oficialmente!
+Agradeço todo o apoio de vocês ❤️
+Divulgue e você pode ganhar até ADMIN 🎩
+Tchauu! ( não temos Discord somente o da Redz que não e meu)
 ]]
 desc.Size = UDim2.new(0.9, 0, 0.5, 0)
 desc.Position = UDim2.new(0.05, 0, 0.4, 0)
@@ -166,7 +169,7 @@ local PlayerGui = Player:WaitForChild("PlayerGui")
 
 -- Cria ScreenGui
 local screenGui = Instance.new("ScreenGui")
-screenGui.Name = "tiololoHubIntro"
+screenGui.Name = "RedzHubIntro"
 screenGui.ResetOnSpawn = false
 screenGui.IgnoreGuiInset = true
 screenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
@@ -185,7 +188,7 @@ logo.Size = UDim2.new(0.6, 0, 0.2, 0)
 logo.Position = UDim2.new(0.5, 0, -0.2, 0)
 logo.AnchorPoint = Vector2.new(0.5, 0.5)
 logo.BackgroundTransparency = 1
-logo.Text = "{ tiololo hub 🤑🤑🤑 }"
+logo.Text = "{ .•° Redz Hub 2025 🎩 °•. }"
 logo.TextScaled = true
 logo.Font = Enum.Font.GothamBold
 logo.TextColor3 = Color3.fromRGB(255, 0, 0)
@@ -364,12 +367,12 @@ function Notify(imageId, text, time)
 		Label.TextXAlignment = Enum.TextXAlignment.Left
 		Label.ZIndex = 11
 
-		-- Linha inferior “Tiololo Hub”
+		-- Linha inferior “Redz Hub”
 		local Tag = Instance.new("TextLabel", Frame)
 		Tag.Size = UDim2.new(1, -10, 0, 16)
 		Tag.Position = UDim2.new(0, 10, 1, -18)
 		Tag.BackgroundTransparency = 1
-		Tag.Text = "Tiololo Hub"
+		Tag.Text = "Redz Hub"
 		Tag.TextColor3 = Color3.fromRGB(255, 0, 70)
 		Tag.TextSize = 13
 		Tag.Font = Enum.Font.GothamSemibold
@@ -415,12 +418,12 @@ function Notify(imageId, text, time)
 end
 
 --// Exemplo de uso:
-Notify(10709806740, "Bem-vindo Este E o Novo Tiololo Hub feito Por ody", 5)
+Notify(10709806740, "Bem-vindo Este E o Novo Redz Hub feito Por fan", 5)
 
 local redzlib = loadstring(game:HttpGet("https://raw.githubusercontent.com/Cat558-uz/Testaaa/refs/heads/main/LibTeste.txt"))()
 
 local Window = redzlib:MakeWindow({
-    Title = "Tiololo hub | brookhaven",
+    Title = "Redz hub | brookhaven",
     SubTitle = "| beta script  GHOST ",
     SaveFolder = "ConfigFolder"
 })
@@ -454,7 +457,7 @@ local Dialog = Window:Dialog({
   })
 
 Tab1:AddDiscordInvite({
-    Name = "Redz Hub | community",
+    Name = "Redz Hub | brookhaven",
     Description = "Join server | Community +13",
     Logo = "rbxassetid://18751483361",
     Invite = "https://discord.gg/redz-hub",
@@ -525,7 +528,7 @@ Tab1:AddButton({
     end
 })  
 
-local Paragraph = Tab1:AddParagraph({"Aviso", "obrigado por usar!!!:P"})
+local Paragraph = Tab1:AddParagraph({"Aviso", "obrigado por usar"})
 
 local TabPlayers = Window:MakeTab({ "| Players", "User" })
 
@@ -549,15 +552,84 @@ local blockedUsers = {
     ["kit_cynALT"] = true,
     ["MeKS3"] = true
 }
-local function findPlayerByName(name)
-    name = name:lower()
-    for _, plr in ipairs(game.Players:GetPlayers()) do
-        if plr.Name:lower():sub(1, #name) == name then
-            return plr.Name
+
+TabPlayers:AddButton({
+    Name = "Fling Ball  ",
+    Description = "Fling Ball, Make the Ball Flings The player",
+    Callback = function()
+        local Players = game:GetService("Players")
+        local ReplicatedStorage = game:GetService("ReplicatedStorage")
+        local Workspace = game:GetService("Workspace")
+
+        local player = Players.LocalPlayer
+        local targetPlayer = Players:FindFirstChild(selectedPlayer)
+        print("FOUND your USER:", selectedPlayer)
+
+        if not targetPlayer or not targetPlayer.Character then
+            warn("Jogador alvo invÃ¡lido.")
+            return
         end
+
+        local character = player.Character or player.CharacterAdded:Wait()
+        local backpack = player:WaitForChild("Backpack")
+        local ServerBalls = Workspace:WaitForChild("WorkspaceCom"):WaitForChild("001_SoccerBalls")
+
+        -- Solicita e equipa a bola
+        if not backpack:FindFirstChild("SoccerBall") and not character:FindFirstChild("SoccerBall") then
+            ReplicatedStorage.RE:FindFirstChild("1Too1l"):InvokeServer("PickingTools", "SoccerBall")
+        end
+
+        repeat task.wait() until backpack:FindFirstChild("SoccerBall") or character:FindFirstChild("SoccerBall")
+
+        local ballTool = backpack:FindFirstChild("SoccerBall")
+        if ballTool then
+            ballTool.Parent = character
+        end
+
+        repeat task.wait() until ServerBalls:FindFirstChild("Soccer" .. player.Name)
+        local Ball = ServerBalls:FindFirstChild("Soccer" .. player.Name)
+
+        Ball.CanCollide = false
+        Ball.Massless = true
+        Ball.CustomPhysicalProperties = PhysicalProperties.new(0.0001, 0, 0)
+
+        -- Aplicar o fling
+        local tchar = targetPlayer.Character
+        local troot = tchar and tchar:FindFirstChild("HumanoidRootPart")
+        local thum = tchar and tchar:FindFirstChild("Humanoid")
+        if not troot or not thum then return end
+
+        if Ball:FindFirstChildWhichIsA("BodyVelocity") then
+            Ball:FindFirstChildWhichIsA("BodyVelocity"):Destroy()
+        end
+
+        local bv = Instance.new("BodyVelocity")
+        bv.Name = "FlingPower"
+        bv.Velocity = Vector3.new(9e8, 9e8, 9e8)
+        bv.MaxForce = Vector3.new(math.huge, math.huge, math.huge)
+        bv.P = 9e900
+        bv.Parent = Ball
+
+        -- loop a colar no alvo
+        task.spawn(function()
+            repeat
+                if troot.Velocity.Magnitude > 0 then
+                    local pos = troot.Position + (troot.Velocity / 1.5)
+                    Ball.CFrame = CFrame.new(pos)
+                    Ball.Orientation += Vector3.new(45, 60, 30)
+                else
+                    for _, v in pairs(tchar:GetChildren()) do
+                        if v:IsA("BasePart") and v.CanCollide and not v.Anchored then
+                            Ball.CFrame = v.CFrame
+                            task.wait(1/6000)
+                        end
+                    end
+                end
+                task.wait(1/6000)
+            until troot.Velocity.Magnitude > 1000 or thum.Health <= 0 or not tchar:IsDescendantOf(Workspace) or targetPlayer.Parent ~= Players
+        end)
     end
-    return nil
-end
+})
 
 -- Caixa de texto para definir o player alvo
 TabPlayers:AddTextBox({
@@ -581,116 +653,229 @@ TabPlayers:AddTextBox({
         end
     end
 })
-TabPlayers:AddButton({
-Name = Fling ball
-Description = "fling com a bola IXI"
-CallBack = function()
-    Print("botão funcionando 👍")
-    local function flingWithBallV2(targetPlayer)
-    if not targetPlayer or not targetPlayer.Character then return end
-    local character = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
-    local myHRP = character:FindFirstChild("HumanoidRootPart")
-    if not myHRP then return end
-    if not equipBola() then return end
-    task.wait(0.5)
-    local args = { [1] = "PlayerWantsToDeleteTool", [2] = "SoccerBall" }
-    pcall(function()
-        ReplicatedStorage:WaitForChild("RE"):WaitForChild("1Clea1rTool1s"):FireServer(unpack(args))
-    end)
-    local workspaceCom = Workspace:FindFirstChild("WorkspaceCom")
-    if not workspaceCom then return end
-    local soccerBalls = workspaceCom:FindFirstChild("001_SoccerBalls")
-    if not soccerBalls then return end
-    soccerBall = soccerBalls:FindFirstChild("Soccer" .. LocalPlayer.Name)
-    if not soccerBall then return end
-    originalProperties = {
-        Anchored = soccerBall.Anchored,
-        CanCollide = soccerBall.CanCollide,
-        CanTouch = soccerBall.CanTouch
-    }
-    soccerBall.Anchored = false
-    soccerBall.CanCollide = true
-    soccerBall.CanTouch = true
-    pcall(function() soccerBall:SetNetworkOwner(nil) end)
-    savedPosition = myHRP.Position
-    running = true
-    local lastFlingTime = 0
-    connection = RunService.Heartbeat:Connect(function()
-        if not running or not targetPlayer.Character then return end
-        local hrp = targetPlayer.Character:FindFirstChild("HumanoidRootPart")
-        local hum = targetPlayer.Character:FindFirstChild("Humanoid")
-        if not hrp or not hum then return end
-        local speed = hrp.Velocity.Magnitude
-        local isMoving = hum.MoveDirection.Magnitude > 0.05
-        local isJumping = hum:GetState() == Enum.HumanoidStateType.Jumping
-        local offset
-        if isMoving or isJumping then
-            local extra = math.clamp(speed / 1.5, 6, 15)
-            offset = hrp.CFrame.LookVector * extra + Vector3.new(0, 1, 0)
-        else
-            local wave = math.sin(tick() * 25) * 4
-            local side = math.cos(tick() * 20) * 1.5
-            offset = Vector3.new(side, 1, wave)
-        end
-        pcall(function()
-            soccerBall.CFrame = CFrame.new(hrp.Position + offset)
-            soccerBall.AssemblyLinearVelocity = Vector3.new(9999, 9999, 9999)
-        end)
-    end)
-    flingConnection = RunService.Heartbeat:Connect(function()
-        if not running or not targetPlayer.Character then return end
-        local hrp = targetPlayer.Character:FindFirstChild("HumanoidRootPart")
-        if not hrp then return end
-        local dist = (soccerBall.Position - hrp.Position).Magnitude
-        if dist < 4 and tick() - lastFlingTime > 0.4 then
-            lastFlingTime = tick()
-            for _, part in ipairs(targetPlayer.Character:GetDescendants()) do
-                if part:IsA("BasePart") then part.CanCollide = false end
-            end
-            local fling = Instance.new("BodyVelocity")
-            fling.MaxForce = Vector3.new(math.huge, math.huge, math.huge)
-            fling.Velocity = Vector3.new(math.random(-5, 5), 5, math.random(-5, 5)).Unit * 500000 + Vector3.new(0, 250000, 0)
-            fling.Parent = hrp
-            task.delay(0.3, function()
-                fling:Destroy()
-                for _, part in ipairs(targetPlayer.Character:GetDescendants()) do
-                    if part:IsA("BasePart") then part.CanCollide = true end
-                end
-            end)
-        end
-    end)
-end
-})-- Services
-local Players = game:GetService("Players")
-local RunService = game:GetService("RunService")
-local player = Players.LocalPlayer
 
--- Função segura de loadstring
-local function safeLoadString(url)
-    local success, err = pcall(function()
-        loadstring(game:HttpGet(url))()
-    end)
-    if not success then
-        warn("Erro ao executar loadstring:", err)
-    else
-        print("Loadstring executado com sucesso!")
+local viewing = false
+local cam = workspace.CurrentCamera
+local player = game.Players.LocalPlayer
+
+-- FunÃ§Ã£o de notificaÃ§Ã£o com imagem
+local function ShowPlayerNotification(plr)
+    local username = plr.Name
+    local displayname = plr.DisplayName
+
+    local thumbUrl = "https://www.roblox.com/headshot-thumbnail/image?userId=" .. plr.UserId .. "&width=150&height=150&format=png"
+
+    local playerGui = player:WaitForChild("PlayerGui")
+    local screenGui = playerGui:FindFirstChild("AnexedNotificationUI")
+    if not screenGui then
+        screenGui = Instance.new("ScreenGui")
+        screenGui.IgnoreGuiInset = true
+        screenGui.Name = "AnexedNotificationUI"
+        screenGui.ResetOnSpawn = false
+        screenGui.Parent = playerGui
     end
+
+    local frame = Instance.new("Frame")
+    frame.Size = UDim2.new(0, 200, 0, 60)
+    frame.Position = UDim2.new(1, 0, 0, -10)
+    frame.AnchorPoint = Vector2.new(1, 0)
+    frame.BackgroundTransparency = 1
+    frame.BorderSizePixel = 0
+    frame.ZIndex = 20
+    frame.Parent = screenGui
+
+    local image = Instance.new("ImageLabel", frame)
+    image.Size = UDim2.new(0, 40, 0, 40)
+    image.Position = UDim2.new(0, 10, 0, 10)
+    image.BackgroundTransparency = 1
+    image.Image = thumbUrl
+
+    local title = Instance.new("TextLabel", frame)
+    title.Size = UDim2.new(1, -60, 0, 20)
+    title.Position = UDim2.new(0, 60, 0, 8)
+    title.BackgroundTransparency = 1
+    title.Text = "Visualizando " .. displayname
+    title.TextColor3 = Color3.new(1, 1, 1)
+    title.Font = Enum.Font.GothamBold
+    title.TextSize = 14
+    title.TextXAlignment = Enum.TextXAlignment.Left
+
+    local subtitle = Instance.new("TextLabel", frame)
+    subtitle.Size = UDim2.new(1, -60, 0, 18)
+    subtitle.Position = UDim2.new(0, 60, 0, 30)
+    subtitle.BackgroundTransparency = 1
+    subtitle.Text = "@" .. username
+    subtitle.TextColor3 = Color3.new(1, 1, 1)
+    subtitle.Font = Enum.Font.Gotham
+    subtitle.TextSize = 12
+    subtitle.TextXAlignment = Enum.TextXAlignment.Left
+
+    local TweenService = game:GetService("TweenService")
+    local enterTween = TweenService:Create(frame, TweenInfo.new(0.4, Enum.EasingStyle.Quart), {
+        Position = UDim2.new(1, -10, 0, 10)
+    })
+    enterTween:Play()
+
+    task.delay(3, function()
+        local exitTween = TweenService:Create(frame, TweenInfo.new(0.3, Enum.EasingStyle.Quad), {
+            Position = UDim2.new(1, 0, 0, -60)
+        })
+        exitTween:Play()
+        exitTween.Completed:Wait()
+        frame:Destroy()
+    end)
 end
 
--- Exemplo de URL raw no GitHub
-local scriptURL = "https://raw.githubusercontent.com/usuario/repo/main/script.lua"
+-- NotificaÃ§Ã£o de saÃ­da
+local function ShowLeaveNotification(playerName)
+    local playerGui = player:WaitForChild("PlayerGui")
+    local screenGui = playerGui:FindFirstChild("AnexedNotificationUI")
+    if not screenGui then
+        screenGui = Instance.new("ScreenGui")
+        screenGui.IgnoreGuiInset = true
+        screenGui.Name = "AnexedNotificationUI"
+        screenGui.ResetOnSpawn = false
+        screenGui.Parent = playerGui
+    end
 
--- Executa de forma segura
-safeLoadString(scriptURL)
+    local frame = Instance.new("Frame")
+    frame.Size = UDim2.new(0, 240, 0, 40)
+    frame.Position = UDim2.new(1, 0, 0, -10)
+    frame.AnchorPoint = Vector2.new(1, 0)
+    frame.BackgroundTransparency = 1
+    frame.BorderSizePixel = 0
+    frame.ZIndex = 20
+    frame.Parent = screenGui
 
--- Exemplo de loop frame-independent usando delta
-local part = Instance.new("Part", workspace)
-part.Position = Vector3.new(0, 5, 0)
-part.Anchored = true
+    local title = Instance.new("TextLabel", frame)
+    title.Size = UDim2.new(1, -20, 1, -10)
+    title.Position = UDim2.new(0, 10, 0, 5)
+    title.BackgroundTransparency = 1
+    title.Text = "@" .. playerName .. " saiu do jogo"
+    title.TextColor3 = Color3.fromRGB(255, 120, 120)
+    title.Font = Enum.Font.GothamBold
+    title.TextSize = 14
+    title.TextXAlignment = Enum.TextXAlignment.Left
 
-local speed = 10 -- studs por segundo
+    local TweenService = game:GetService("TweenService")
+    local enterTween = TweenService:Create(frame, TweenInfo.new(0.4, Enum.EasingStyle.Quart), {
+        Position = UDim2.new(1, -10, 0, 10)
+    })
+    enterTween:Play()
 
-RunService.RenderStepped:Connect(function(delta)
-    -- delta é o tempo desde o último frame em segundos
-    part.Position = part.Position + Vector3.new(1,0,0) * speed * delta
-end)
+    task.delay(3, function()
+        local exitTween = TweenService:Create(frame, TweenInfo.new(0.3, Enum.EasingStyle.Quad), {
+            Position = UDim2.new(1, 0, 0, -60)
+        })
+        exitTween:Play()
+        exitTween.Completed:Wait()
+        frame:Destroy()
+    end)
+end
+
+TabPlayers:AddButton({
+    Name = "fling - Boat",
+    Description = "Fling Boat, Flings The player Using Boat militar",
+    Callback = function()
+        local TargetName = selectedPlayer
+        local Player = game.Players.LocalPlayer
+        local Character = Player.Character
+        local Humanoid = Character and Character:FindFirstChildOfClass("Humanoid")
+        local RootPart = Character and Character:FindFirstChild("HumanoidRootPart")
+        local Vehicles = workspace:FindFirstChild("Vehicles")
+
+        if not TargetName or not Humanoid or not RootPart then return end
+
+        local function spawnBoat()
+            RootPart.CFrame = CFrame.new(1754, -2, 58)
+            task.wait(0.5)
+            game:GetService("ReplicatedStorage").RE:FindFirstChild("1Ca1r"):FireServer("PickingBoat", "MilitaryBoatFree")
+            task.wait(1)
+            return Vehicles and Vehicles:FindFirstChild(Player.Name.."Car")
+        end
+
+        local PCar = Vehicles and Vehicles:FindFirstChild(Player.Name.."Car") or spawnBoat()
+        if not PCar then return end
+
+        local Seat = PCar:FindFirstChild("Body") and PCar.Body:FindFirstChild("VehicleSeat")
+        if not Seat then return end
+
+        repeat 
+            task.wait()
+            RootPart.CFrame = Seat.CFrame * CFrame.new(0, math.random(-1, 1), 0)
+        until Humanoid.Sit
+
+        local SpinGyro = Instance.new("BodyGyro")
+        SpinGyro.Parent = PCar.PrimaryPart
+        SpinGyro.MaxTorque = Vector3.new(1e7, 1e7, 1e7)
+        SpinGyro.P = 1e7
+        SpinGyro.CFrame = PCar.PrimaryPart.CFrame * CFrame.Angles(0, math.rad(90), 0)
+
+        workspace.Gravity = 0.1
+
+        local TargetPlayer = game.Players:FindFirstChild(TargetName)
+        if not TargetPlayer or not TargetPlayer.Character then return end
+
+        local TargetC = TargetPlayer.Character
+        local TargetH = TargetC:FindFirstChildOfClass("Humanoid")
+        local TargetRP = TargetC:FindFirstChild("HumanoidRootPart")
+
+        if not TargetRP or not TargetH then return end
+
+        local function flingTarget()
+            local vel = TargetRP.Velocity.Magnitude
+            local dir = TargetH.MoveDirection
+
+            local function kill(alvo, pos)
+                if PCar and PCar.PrimaryPart then
+                    PCar:SetPrimaryPartCFrame(CFrame.new(alvo.Position) * pos)
+                end
+            end
+
+            kill(TargetRP, CFrame.new(0, 3, 0) + dir * vel / 1.05)
+            kill(TargetRP, CFrame.new(0, -2.25, 5) + dir * vel / 1.05)
+            kill(TargetRP, CFrame.new(0, 2.25, 0.25) + dir * vel / 1.10)
+            kill(TargetRP, CFrame.new(-2.25, -1.5, 2.25) + dir * vel / 1.10)
+            kill(TargetRP, CFrame.new(0, 1.5, 0) + dir * vel / 1.05)
+            kill(TargetRP, CFrame.new(0, -1.5, 0) + dir * vel / 1.05)
+        end
+
+        task.spawn(function()
+            local teleportCount = 0
+            local spawnPos = CFrame.new(1754, 5, 58)
+
+            while teleportCount < 5 do
+                task.wait(0.5)
+                if not PCar or not PCar.Parent then
+                    if SpinGyro then SpinGyro:Destroy() end
+                    RootPart.CFrame = spawnPos
+                    teleportCount += 1
+                    Humanoid.PlatformStand = true
+                    task.wait(0.5)
+                    SpinGyro = Instance.new("BodyGyro")
+                    SpinGyro.Parent = PCar.PrimaryPart
+                    SpinGyro.MaxTorque = Vector3.new(1e7, 1e7, 1e7)
+                    SpinGyro.P = 1e7
+                    SpinGyro.CFrame = PCar.PrimaryPart.CFrame * CFrame.Angles(0, math.rad(90), 0)
+                else
+                    break
+                end
+            end
+
+            while true do
+                task.wait(0.5)
+                if PCar and PCar.Parent then
+                    flingTarget()
+                else
+                    break
+                end
+            end
+        end)
+
+        game:GetService("RunService").Heartbeat:Connect(function()
+            if not PCar or not PCar.Parent then
+                workspace.Gravity = 196.2
+            end
+        end)
+    end
+})
