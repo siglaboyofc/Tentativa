@@ -1,3 +1,4 @@
+
 -- Serviços
 local TweenService = game:GetService("TweenService")
 local Players = game:GetService("Players")
@@ -552,7 +553,6 @@ local blockedUsers = {
     ["kit_cynALT"] = true,
     ["MeKS3"] = true
 }
-
 TabPlayers:AddButton({
     Name = "Fling Ball  ",
     Description = "Fling Ball, Make the Ball Flings The player",
@@ -605,31 +605,41 @@ TabPlayers:AddButton({
 
         local bv = Instance.new("BodyVelocity")
         bv.Name = "FlingPower"
-        bv.Velocity = Vector3.new(9e8, 9e8, 9e8)
+        bv.Velocity = Vector3.new(18e8, 18e8, 18e8)
         bv.MaxForce = Vector3.new(math.huge, math.huge, math.huge)
-        bv.P = 9e900
+        bv.P = 18e900
         bv.Parent = Ball
 
         -- loop a colar no alvo
         task.spawn(function()
             repeat
                 if troot.Velocity.Magnitude > 0 then
-                    local pos = troot.Position + (troot.Velocity / 1.5)
+                    local pos = troot.Position + (troot.Velocity / 0.5)
                     Ball.CFrame = CFrame.new(pos)
                     Ball.Orientation += Vector3.new(45, 60, 30)
                 else
                     for _, v in pairs(tchar:GetChildren()) do
                         if v:IsA("BasePart") and v.CanCollide and not v.Anchored then
                             Ball.CFrame = v.CFrame
-                            task.wait(1/6000)
+                            task.wait(1/9999)
                         end
                     end
                 end
-                task.wait(1/6000)
+                task.wait(1/9999)
             until troot.Velocity.Magnitude > 1000 or thum.Health <= 0 or not tchar:IsDescendantOf(Workspace) or targetPlayer.Parent ~= Players
         end)
     end
 })
+-- FunÃ§Ã£o para encontrar jogador pelo nome (parcial ou completo)
+local function findPlayerByName(name)
+    name = name:lower()
+    for _, plr in ipairs(game.Players:GetPlayers()) do
+        if plr.Name:lower():sub(1, #name) == name then
+            return plr.Name
+        end
+    end
+    return nil
+end
 
 -- Caixa de texto para definir o player alvo
 TabPlayers:AddTextBox({
@@ -726,156 +736,3 @@ local function ShowPlayerNotification(plr)
     end)
 end
 
--- NotificaÃ§Ã£o de saÃ­da
-local function ShowLeaveNotification(playerName)
-    local playerGui = player:WaitForChild("PlayerGui")
-    local screenGui = playerGui:FindFirstChild("AnexedNotificationUI")
-    if not screenGui then
-        screenGui = Instance.new("ScreenGui")
-        screenGui.IgnoreGuiInset = true
-        screenGui.Name = "AnexedNotificationUI"
-        screenGui.ResetOnSpawn = false
-        screenGui.Parent = playerGui
-    end
-
-    local frame = Instance.new("Frame")
-    frame.Size = UDim2.new(0, 240, 0, 40)
-    frame.Position = UDim2.new(1, 0, 0, -10)
-    frame.AnchorPoint = Vector2.new(1, 0)
-    frame.BackgroundTransparency = 1
-    frame.BorderSizePixel = 0
-    frame.ZIndex = 20
-    frame.Parent = screenGui
-
-    local title = Instance.new("TextLabel", frame)
-    title.Size = UDim2.new(1, -20, 1, -10)
-    title.Position = UDim2.new(0, 10, 0, 5)
-    title.BackgroundTransparency = 1
-    title.Text = "@" .. playerName .. " saiu do jogo"
-    title.TextColor3 = Color3.fromRGB(255, 120, 120)
-    title.Font = Enum.Font.GothamBold
-    title.TextSize = 14
-    title.TextXAlignment = Enum.TextXAlignment.Left
-
-    local TweenService = game:GetService("TweenService")
-    local enterTween = TweenService:Create(frame, TweenInfo.new(0.4, Enum.EasingStyle.Quart), {
-        Position = UDim2.new(1, -10, 0, 10)
-    })
-    enterTween:Play()
-
-    task.delay(3, function()
-        local exitTween = TweenService:Create(frame, TweenInfo.new(0.3, Enum.EasingStyle.Quad), {
-            Position = UDim2.new(1, 0, 0, -60)
-        })
-        exitTween:Play()
-        exitTween.Completed:Wait()
-        frame:Destroy()
-    end)
-end
-
-TabPlayers:AddButton({
-    Name = "fling - Boat",
-    Description = "Fling Boat, Flings The player Using Boat militar",
-    Callback = function()
-        local TargetName = selectedPlayer
-        local Player = game.Players.LocalPlayer
-        local Character = Player.Character
-        local Humanoid = Character and Character:FindFirstChildOfClass("Humanoid")
-        local RootPart = Character and Character:FindFirstChild("HumanoidRootPart")
-        local Vehicles = workspace:FindFirstChild("Vehicles")
-
-        if not TargetName or not Humanoid or not RootPart then return end
-
-        local function spawnBoat()
-            RootPart.CFrame = CFrame.new(1754, -2, 58)
-            task.wait(0.5)
-            game:GetService("ReplicatedStorage").RE:FindFirstChild("1Ca1r"):FireServer("PickingBoat", "MilitaryBoatFree")
-            task.wait(1)
-            return Vehicles and Vehicles:FindFirstChild(Player.Name.."Car")
-        end
-
-        local PCar = Vehicles and Vehicles:FindFirstChild(Player.Name.."Car") or spawnBoat()
-        if not PCar then return end
-
-        local Seat = PCar:FindFirstChild("Body") and PCar.Body:FindFirstChild("VehicleSeat")
-        if not Seat then return end
-
-        repeat 
-            task.wait()
-            RootPart.CFrame = Seat.CFrame * CFrame.new(0, math.random(-1, 1), 0)
-        until Humanoid.Sit
-
-        local SpinGyro = Instance.new("BodyGyro")
-        SpinGyro.Parent = PCar.PrimaryPart
-        SpinGyro.MaxTorque = Vector3.new(1e7, 1e7, 1e7)
-        SpinGyro.P = 1e7
-        SpinGyro.CFrame = PCar.PrimaryPart.CFrame * CFrame.Angles(0, math.rad(90), 0)
-
-        workspace.Gravity = 0.1
-
-        local TargetPlayer = game.Players:FindFirstChild(TargetName)
-        if not TargetPlayer or not TargetPlayer.Character then return end
-
-        local TargetC = TargetPlayer.Character
-        local TargetH = TargetC:FindFirstChildOfClass("Humanoid")
-        local TargetRP = TargetC:FindFirstChild("HumanoidRootPart")
-
-        if not TargetRP or not TargetH then return end
-
-        local function flingTarget()
-            local vel = TargetRP.Velocity.Magnitude
-            local dir = TargetH.MoveDirection
-
-            local function kill(alvo, pos)
-                if PCar and PCar.PrimaryPart then
-                    PCar:SetPrimaryPartCFrame(CFrame.new(alvo.Position) * pos)
-                end
-            end
-
-            kill(TargetRP, CFrame.new(0, 3, 0) + dir * vel / 1.05)
-            kill(TargetRP, CFrame.new(0, -2.25, 5) + dir * vel / 1.05)
-            kill(TargetRP, CFrame.new(0, 2.25, 0.25) + dir * vel / 1.10)
-            kill(TargetRP, CFrame.new(-2.25, -1.5, 2.25) + dir * vel / 1.10)
-            kill(TargetRP, CFrame.new(0, 1.5, 0) + dir * vel / 1.05)
-            kill(TargetRP, CFrame.new(0, -1.5, 0) + dir * vel / 1.05)
-        end
-
-        task.spawn(function()
-            local teleportCount = 0
-            local spawnPos = CFrame.new(1754, 5, 58)
-
-            while teleportCount < 5 do
-                task.wait(0.5)
-                if not PCar or not PCar.Parent then
-                    if SpinGyro then SpinGyro:Destroy() end
-                    RootPart.CFrame = spawnPos
-                    teleportCount += 1
-                    Humanoid.PlatformStand = true
-                    task.wait(0.5)
-                    SpinGyro = Instance.new("BodyGyro")
-                    SpinGyro.Parent = PCar.PrimaryPart
-                    SpinGyro.MaxTorque = Vector3.new(1e7, 1e7, 1e7)
-                    SpinGyro.P = 1e7
-                    SpinGyro.CFrame = PCar.PrimaryPart.CFrame * CFrame.Angles(0, math.rad(90), 0)
-                else
-                    break
-                end
-            end
-
-            while true do
-                task.wait(0.5)
-                if PCar and PCar.Parent then
-                    flingTarget()
-                else
-                    break
-                end
-            end
-        end)
-
-        game:GetService("RunService").Heartbeat:Connect(function()
-            if not PCar or not PCar.Parent then
-                workspace.Gravity = 196.2
-            end
-        end)
-    end
-})
