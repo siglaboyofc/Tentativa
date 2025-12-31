@@ -2042,3 +2042,384 @@ TabAnt:AddToggle({
 
                 return OldNamecall(...)
             end))
+
+            local OldKick; OldKick = hookfunction(LocalPlayer.Kick, newcclosure(function(...)
+                local self, msg = ...
+                if ((getgenv().ED_AntiKick.CheckCaller and not checkcaller()) or true)
+                    and CompareInstances(self, LocalPlayer)
+                    and getgenv().ED_AntiKick.Enabled then
+
+                    if CanCastToSTDString(msg) and getgenv().ED_AntiKick.SendNotifications then
+                        SetCore(StarterGui, "SendNotification", {
+                            Title = "Anti Kick",
+                            Text = "Tentativa de kick bloqueada.",
+                            Icon = "rbxassetid://6238540373",
+                            Duration = 2
+                        })
+                    end
+                    return
+                end
+            end))
+
+            -- NotificaÃƒÂ§ÃƒÂ£o de carregamento
+            pcall(function()
+                StarterGui:SetCore("SendNotification", {
+                    Title = "Anexed Notificator Anti-Kick",
+                    Text = "Script Anti-Kick ativado.",
+                    Icon = "rbxassetid://6238537240",
+                    Duration = 3
+                })
+            end)
+        else
+            pcall(function()
+                StarterGui:SetCore("SendNotification", {
+                    Title = "Anxed Notificator Anti-Kick",
+                    Text = "Script Anti-Kick desativado.",
+                    Icon = "rbxassetid://6238537240",
+                    Duration = 3
+                })
+            end)
+        end
+    end
+})
+
+local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
+local StarterGui = game:GetService("StarterGui")
+
+local player = Players.LocalPlayer
+local lastSafePos = Vector3.new(-26.09, 2.79, 6.11)
+local avoidConn
+local lastNotify = 0
+
+TabAnt:AddToggle({
+    Name = "Anti Void",
+    Description = "meio ruim mas eficaz",
+    Default = false,
+    Callback = function(Value)
+        if avoidConn then
+            avoidConn:Disconnect()
+            avoidConn = nil
+        end
+
+        if Value then
+            avoidConn = RunService.Stepped:Connect(function()
+                local char = player.Character
+                local hrp = char and char:FindFirstChild("HumanoidRootPart")
+                local humanoid = char and char:FindFirstChildOfClass("Humanoid")
+                if not hrp or not humanoid then return end
+
+                local pos = hrp.Position
+
+                -- Atualiza a última posição segura
+                if pos.Y > -20 and pos.Y < 1000 and math.abs(pos.X) < 2000 and math.abs(pos.Z) < 2000 then
+                    lastSafePos = pos
+                end
+
+                -- Detecta void ou posições extremas
+                if pos.Y < -50 or pos.Y > 1500 or math.abs(pos.X) > 3000 or math.abs(pos.Z) > 3000 then
+                    hrp.CFrame = CFrame.new(lastSafePos)
+
+                    -- Freeze por 1.3 segundos (sem permitir movimento)
+                    local freeze = Instance.new("BodyVelocity")
+                    freeze.Velocity = Vector3.new(0, 0, 0)
+                    freeze.MaxForce = Vector3.new(1e9, 1e9, 1e9)
+                    freeze.P = 1e5
+                    freeze.Parent = hrp
+
+                    task.delay(1.3, function()
+                        freeze:Destroy()
+                    end)
+
+                    -- Evitar spam de notificações
+                    if tick() - lastNotify > 2 then
+                        lastNotify = tick()
+                        pcall(function()
+                            StarterGui:SetCore("SendNotification", {
+                                Title = "Anti Void",
+                                Text = "Tentativa de kill bloqueada",
+                                Duration = 2
+                            })
+                        end)
+                    end
+                end
+            end)
+        end
+    end
+})
+
+local Players = game:GetService("Players")
+local StarterGui = game:GetService("StarterGui")
+
+local notifyEnabled = false -- Estado inicial
+
+TabAnt:AddToggle({
+    Name = "Notificar Entrada/SaÃ­da",
+    Description = "mais o menos mais e util ",
+    Default = false,
+    Callback = function(state)
+        notifyEnabled = state
+    end
+})
+
+-- NotificaÃ§Ã£o quando um player entra
+Players.PlayerAdded:Connect(function(player)
+    if notifyEnabled then
+        StarterGui:SetCore("SendNotification", {
+            Title = "Jogador Entrou",
+            Text = player.Name .. " entrou no jogo",
+            Duration = 5
+        })
+    end
+end)
+
+-- NotificaÃ§Ã£o quando um player sai
+Players.PlayerRemoving:Connect(function(player)
+    if notifyEnabled then
+        StarterGui:SetCore("SendNotification", {
+            Title = "Jogador Saiu",
+            Text = player.Name .. " saiu do jogo",
+            Duration = 5
+        })
+    end
+end)
+
+local ScreenGui = Instance.new("ScreenGui")
+local Frame = Instance.new("Frame")
+local FPSLabel = Instance.new("TextLabel")
+local MSLabel = Instance.new("TextLabel")
+
+ScreenGui.Name = "StatsUI"
+Frame.Parent = ScreenGui
+Frame.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+Frame.BackgroundTransparency = 0.2
+Frame.Size = UDim2.new(0, 150, 0, 50)
+Frame.Position = UDim2.new(1, -160, 1, -60)
+Frame.BorderSizePixel = 0
+Frame.AnchorPoint = Vector2.new(0, 0)
+Frame.ClipsDescendants = true
+Frame.ZIndex = 5
+Instance.new("UICorner", Frame).CornerRadius = UDim.new(0, 8)
+
+FPSLabel.Parent = Frame
+FPSLabel.BackgroundTransparency = 1
+FPSLabel.Position = UDim2.new(0, 10, 0, 5)
+FPSLabel.Size = UDim2.new(1, -20, 0, 20)
+FPSLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+FPSLabel.TextStrokeTransparency = 0.5
+FPSLabel.Font = Enum.Font.GothamBold
+FPSLabel.TextSize = 14
+FPSLabel.Text = "FPS: 0"
+
+MSLabel.Parent = Frame
+MSLabel.BackgroundTransparency = 1
+MSLabel.Position = UDim2.new(0, 10, 0, 25)
+MSLabel.Size = UDim2.new(1, -20, 0, 20)
+MSLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+MSLabel.TextStrokeTransparency = 0.5
+MSLabel.Font = Enum.Font.GothamBold
+MSLabel.TextSize = 14
+MSLabel.Text = "MS: N/A"
+
+local RunService = game:GetService("RunService")
+local Stats = game:GetService("Stats")
+
+local fps = 0
+local frames = 0
+local lastUpdate = tick()
+local updating = false
+
+local function UpdateStats()
+    while updating do
+        frames += 1
+        local now = tick()
+
+        if now - lastUpdate >= 1 then
+            fps = frames
+            frames = 0
+            lastUpdate = now
+            FPSLabel.Text = "FPS: " .. fps
+
+            local pingStat = Stats:FindFirstChild("PerformanceStats")
+            if pingStat and pingStat:FindFirstChild("Ping") then
+                local ping = math.floor(pingStat.Ping:GetValue())
+                MSLabel.Text = "MS: " .. ping
+            else
+                MSLabel.Text = "MS: N/A"
+            end
+        end
+        RunService.RenderStepped:Wait()
+    end
+end
+
+local function SetStatsVisible(visible)
+    if visible then
+        ScreenGui.Parent = game:GetService("CoreGui")
+        if not updating then
+            updating = true
+            task.spawn(UpdateStats)
+        end
+    else
+        updating = false
+        ScreenGui.Parent = nil
+    end
+end
+
+Toggle
+TabAnt:AddToggle({
+    Name = "Mostrar FPS/MS",
+    Description = "otimo pra ver si ta com lag",
+    Default = false,
+    Callback = function(v)
+        SetStatsVisible(v)
+    end
+})
+
+local conexaoAutoRemocao
+local alvo = "1Gu1nSound1s"
+local objetosRestaurados = {} -- Armazena cópias e pais originais
+
+local function removerAlvo()
+    for _, obj in ipairs(game:GetDescendants()) do
+        if obj.Name == alvo then
+            pcall(function()
+                local clone = obj:Clone()
+                local parentOriginal = obj.Parent
+                table.insert(objetosRestaurados, {Clone = clone, Parent = parentOriginal})
+                obj:Destroy()
+            end)
+        end
+    end
+end
+
+local function restaurarAlvo()
+    for _, dados in ipairs(objetosRestaurados) do
+        pcall(function()
+            dados.Clone.Parent = dados.Parent
+        end)
+    end
+    objetosRestaurados = {}
+end
+
+TabAnt:AddToggle({
+    Name = "Anti sound All",
+    Description = "ativado isso vc n consegue utilizar ele o sond all",
+    Default = false,
+    Callback = function(v)
+        if v then
+            removerAlvo()
+            conexaoAutoRemocao = game.DescendantAdded:Connect(function(obj)
+                if obj.Name == alvo then
+                    task.wait(0.1)
+                    pcall(function()
+                        local clone = obj:Clone()
+                        local parentOriginal = obj.Parent
+                        table.insert(objetosRestaurados, {Clone = clone, Parent = parentOriginal})
+                        obj:Destroy()
+                    end)
+                end
+            end)
+        else
+            if conexaoAutoRemocao then
+                conexaoAutoRemocao:Disconnect()
+                conexaoAutoRemocao = nil
+            end
+            restaurarAlvo()
+        end
+    end
+})
+
+TabAnt:AddToggle({
+    Name = "Anti Fling Balls",
+    Description = "outros users Vao Chora com isso ",
+    Default = false,
+    Callback = function(v)
+        local RunService = game:GetService("RunService")
+        local Players = game:GetService("Players")
+        local Workspace = game:GetService("Workspace")
+        local player = Players.LocalPlayer
+
+        local NoclipConnection
+
+        local function DisableCollision(model)
+            if model then
+                for _, part in ipairs(model:GetDescendants()) do
+                    if part:IsA("BasePart") then
+                        part.CanCollide = false
+                    end
+                end
+            end
+        end
+
+        if v then
+            if NoclipConnection then return end
+            NoclipConnection = RunService.Stepped:Connect(function()
+                local char = player.Character or player.CharacterAdded:Wait()
+                DisableCollision(char)
+                local container = workspace:FindFirstChild("WorkspaceCom")
+                if container then
+                    local folder = container:FindFirstChild("001_SoccerBalls")
+                    DisableCollision(folder)
+                end
+            end)
+        else
+            if NoclipConnection then
+                NoclipConnection:Disconnect()
+                NoclipConnection = nil
+            end
+        end
+    end
+})
+
+local remoteClone
+local remoteParent
+local alvoNome = "1Gu1n"
+local alvoCaminho = game:GetService("ReplicatedStorage"):WaitForChild("RE")
+
+local function removerRemote()
+    local remote = alvoCaminho:FindFirstChild(alvoNome)
+    if remote then
+        pcall(function()
+            remoteClone = remote:Clone()
+            remoteParent = remote.Parent
+            remote:Destroy()
+        end)
+    end
+end
+
+local function restaurarRemote()
+    if remoteClone and remoteParent then
+        pcall(function()
+            remoteClone.Parent = remoteParent
+        end)
+        remoteClone = nil
+        remoteParent = nil
+    end
+end
+
+TabAnt:AddToggle({
+    Name = "Anti bug/freeze/glitch",
+    Description = "ativado vc n consegue usar",
+    Default = false,
+    Callback = function(v)
+        if v then
+            removerRemote()
+            conexaoAutoRemocao = alvoCaminho.ChildAdded:Connect(function(obj)
+                if obj.Name == alvoNome then
+                    task.wait(0.1)
+                    pcall(function()
+                        remoteClone = obj:Clone()
+                        remoteParent = obj.Parent
+                        obj:Destroy()
+                    end)
+                end
+            end)
+        else
+            if conexaoAutoRemocao then
+                conexaoAutoRemocao:Disconnect()
+                conexaoAutoRemocao = nil
+            end
+            restaurarRemote()
+        end
+    end
+})
