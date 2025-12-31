@@ -580,8 +580,7 @@ TabPlayers:AddTextBox({
             Notify(10709806740, "? erro Player Insert The NAME<", 3)
         end
     end
-})
-TabPlayers:AddButton({
+})TabPlayers:AddButton({
     Name = "Fling Ball  ",
     Description = "Fling Ball, Make the Ball Flings The player",
     Callback = function()
