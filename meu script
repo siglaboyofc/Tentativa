@@ -582,6 +582,7 @@ TabPlayers:AddTextBox({
     end
 })
 TabPlayers:AddButton({
+Name = Fling ball
 Description = "fling com a bola IXI"
 CallBack = function()
     Print("botão funcionando 👍")
