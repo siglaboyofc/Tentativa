@@ -1,17 +1,16 @@
 --====================================================
 -- 🔥 FIRE HUB | BROOKHAVEN
 -- UI REFEITA | PC + MOBILE
--- PARTE 1/?
 --====================================================
 
--- 🔹 Carregar Redz Library (Mobile Friendly)
-local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/Frost230/Embee/refs/heads/main/Redz"))()
+-- 🔹 Carregar Redz Library
+local Library = loadstring(game:HttpGet(
+    "https://raw.githubusercontent.com/Frost230/Embee/refs/heads/main/Redz"
+))()
 
 -- 🔹 Serviços
 workspace.FallenPartsDestroyHeight = -math.huge
 local Players = game:GetService("Players")
-local MarketplaceService = game:GetService("MarketplaceService")
-local TeleportService = game:GetService("TeleportService")
 local LocalPlayer = Players.LocalPlayer
 
 --====================================================
@@ -22,10 +21,10 @@ local Window = Library:MakeWindow({
     SubTitle = "By: Frost230_0",
     LoadText = "Carregando Fire Hub...",
     Flags = "FireHub_Brookhaven",
-    Size = UDim2.fromScale(0.55, 0.65) -- Responsivo Mobile/PC
+    Size = UDim2.fromScale(0.55, 0.65)
 })
 
--- 🔹 Botão minimizar (Mobile Safe)
+-- 🔹 Botão minimizar
 Window:AddMinimizeButton({
     Button = {
         Image = "rbxassetid://126713579020014",
@@ -34,33 +33,99 @@ Window:AddMinimizeButton({
     Corner = { CornerRadius = UDim.new(1, 0) }
 })
 
--- =========================================================
--- 🔹 ABAS TESTE (7 abas)
--- =========================================================
-local RealInfoTab = Window:MakeTab({
-    Title = "|  Info",
+--====================================================
+-- 🔹 ABAS
+--====================================================
+local InfoTab = Window:MakeTab({
+    Title = "| Info",
     Icon = "rbxassetid://15309138473"
 })
 
-local RealInfoTab = Window:MakeTab({
-    Title = "|  Itens",
-    Icon = "rbxassetid://20250104"
+local TabMain = Window:MakeTab({
+    Title = "| Main",
+    Icon = "rbxassetid://15309138473"
 })
 
-ItensTab:AddButton({
-    Name = "Puxar itens do mapa",
+--====================================================
+-- 🔹 BOTÃO PUXAR ITENS
+--====================================================
+TabMain:AddButton({
+    Name = "Puxar Itens",
     Callback = function()
-        local Players = game:GetService("Players")
-        local LocalPlayer = Players.LocalPlayer
-        local Character = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
-        local HRP = Character:WaitForChild("HumanoidRootPart")
+        local char = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
+        local hrp = char:FindFirstChild("HumanoidRootPart")
+        if not hrp then return end
 
-        for _, v in ipairs(workspace:GetDescendants()) do
-            if v:IsA("BasePart") and v:FindFirstChild("TouchInterest") then
-                pcall(function()
-                    v.CFrame = HRP.CFrame
-                end)
+        local targetPos = hrp.Position + Vector3.new(0, 5, 0)
+
+        local spawnedItems =
+            workspace:FindFirstChild("Map")
+            and workspace.Map:FindFirstChild("Functional")
+            and workspace.Map.Functional:FindFirstChild("SpawnedItems")
+
+        if not spawnedItems then return end
+
+        for _, rarity in ipairs({
+            "Common","Uncommon","Rare","Epic","Legendary"
+        }) do
+            local folder = spawnedItems:FindFirstChild(rarity)
+            if folder then
+                for _, item in ipairs(folder:GetChildren()) do
+                    local root = item:FindFirstChild("Root")
+                    if root and root:IsA("BasePart") then
+                        root.CFrame = CFrame.new(targetPos)
+                        root.AssemblyLinearVelocity = Vector3.zero
+                    end
+                end
             end
+        end
+    end
+})
+
+--====================================================
+-- 🔹 COORDENADAS
+--====================================================
+local Locations = {
+    ["vendedor"] = Vector3.new(103.06, -7.15, -11.63),
+    ["Cozinha"] = Vector3.new(262.88, -7.15, -18.62),
+    ["Local da escada"] = Vector3.new(165.07, -7.15, 195.45),
+    ["Onde botar a escada"] = Vector3.new(196.49, -7.15, 80.80),
+    ["Final mina"] = Vector3.new(-27.20, -510.66, 59.39),
+    ["Final obby"] = Vector3.new(319.54, 10.67, 94.27)
+}
+
+local SelectedCoord
+
+--====================================================
+-- 🔹 DROPDOWN
+--====================================================
+TabMain:AddDropdown({
+    Name = " Teleport Locations",
+    Options = {
+        "vendedor",
+        "Cozinha",
+        "Local da escada",
+        "Onde botar a escada",
+        "Final mina",
+        "Final obby"
+    },
+    Callback = function(Value)
+        SelectedCoord = Locations[Value]
+    end
+})
+
+--====================================================
+-- 🔹 BOTÃO TELEPORTAR
+--====================================================
+TabMain:AddButton({
+    Name = " Teleportar para local",
+    Callback = function()
+        if SelectedCoord
+        and LocalPlayer.Character
+        and LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
+
+            LocalPlayer.Character.HumanoidRootPart.CFrame =
+                CFrame.new(SelectedCoord)
         end
     end
 })
