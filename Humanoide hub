@@ -528,9 +528,7 @@ local Paragraph = Tab1:AddParagraph({
 
 local TabPlayers = Window:MakeTab({ "| Players", "User" })
 
-
-
-TabPlayers:AddSection({Name = " Target ( INSERT ONLY NAME )"})
+TabPlayers:AddSection({" Target ( INSERT ONLY NAME )"})
 
 local viewing = false
 local loopTP = false
