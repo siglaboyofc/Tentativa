@@ -421,7 +421,7 @@ end
 --// Exemplo de uso:
 Notify(10709806740, "Bem-vindo Este E o Novo Humanoide Hub feito Por Soaress77", 5)
 
-local redzlib = loadstring(game:HttpGet("https://raw.githubusercontent.com/Cat558-uz/Testaaa/refs/heads/main/LibTeste.txt"))()
+local redzlib = loadstring(game:HttpGet("https://raw.githubusercontent.com/Frost230/Embee/refs/heads/main/Redz"))()
 
 local Window = redzlib:MakeWindow({
     Title = "Humanoide hub | brookhaven",
