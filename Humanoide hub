@@ -522,8 +522,7 @@ Tab1:AddButton({
 })  
 
 local Paragraph = Tab1:AddParagraph({
-    Title = "Colaboradores",
-    Content = "Soareszz77 e Ody"
+    Title = "Colaboradores","Soareszz77 e Ody"
 })
 
 local TabPlayers = Window:MakeTab({ "| Players", "User" })
