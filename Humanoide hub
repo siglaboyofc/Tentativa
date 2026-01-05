@@ -189,7 +189,7 @@ logo.Size = UDim2.new(0.6, 0, 0.2, 0)
 logo.Position = UDim2.new(0.5, 0, -0.2, 0)
 logo.AnchorPoint = Vector2.new(0.5, 0.5)
 logo.BackgroundTransparency = 1
-logo.Text = "{ 👨‍💻Humanoide Hub 2👨‍💻025  }"
+logo.Text = "{ 👨‍💻Humanoide Hub2👨‍💻26  }"
 logo.TextScaled = true
 logo.Font = Enum.Font.GothamBold
 logo.TextColor3 = Color3.fromRGB(255, 0, 0)
@@ -419,7 +419,7 @@ function Notify(imageId, text, time)
 end
 
 --// Exemplo de uso:
-Notify(10709806740, "Bem-vindo Este E o Novo Humanoide Hub feito Por Soaress77", 5)
+Notify(10709806740, "Bem-vindo Este E o Novo Humanoide Hub feito Por Soaress77 e ody!", 5)
 
 local redzlib = loadstring(game:HttpGet("https://raw.githubusercontent.com/Frost230/Embee/refs/heads/main/Redz"))()
 
