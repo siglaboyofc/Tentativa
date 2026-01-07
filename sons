@@ -519,139 +519,116 @@ Tab1:AddButton({
 local TabMain = Window:MakeTab({ "| Main", "Main" })
 
 TabMain:AddButton({
-    Name = "tool boombox fe 100%",
+    Name = "Tool Boombox (Universal Safe)",
     Callback = function()
 
+        local Players = game:GetService("Players")
+        local ReplicatedStorage = game:GetService("ReplicatedStorage")
+        local player = Players.LocalPlayer
+        local playerGui = player:WaitForChild("PlayerGui")
 
-local player = game.Players.LocalPlayer
-        local playerGui = player:FindFirstChild("PlayerGui")
-        if not playerGui then return end
-
-        local boombox
-        local sg
         local lastID = 142376088
+        local gui
 
-        local function createBoombox()
-            boombox = Instance.new("Tool")
-            boombox.Name = "Boombox"
-            boombox.RequiresHandle = true
-            boombox.Parent = player.Backpack
+        -- Remove boombox antiga
+        if player.Backpack:FindFirstChild("Boombox") then
+            player.Backpack.Boombox:Destroy()
+        end
 
-            local handle = Instance.new("Part")
-            handle.Name = "Handle"
-            handle.Size = Vector3.new(1, 1, 1)
-            handle.CanCollide = false
-            handle.Anchored = false
-            handle.Transparency = 1
-            handle.Parent = boombox
+        -- Tool
+        local tool = Instance.new("Tool")
+        tool.Name = "Boombox"
+        tool.RequiresHandle = true
+        tool.Parent = player.Backpack
 
-            boombox.Equipped:Connect(function()
-                if sg then return end
+        local handle = Instance.new("Part")
+        handle.Name = "Handle"
+        handle.Size = Vector3.new(1,1,1)
+        handle.Transparency = 1
+        handle.CanCollide = false
+        handle.Parent = tool
 
-                sg = Instance.new("ScreenGui")
-                sg.Name = "ChooseSongGui"
-                sg.Parent = playerGui  
-
-                local frame = Instance.new("Frame")
-                frame.Style = "RobloxRound"
-                frame.Size = UDim2.new(0.25, 0, 0.25, 0)
-                frame.Position = UDim2.new(0.375, 0, 0.375, 0)
-                frame.Draggable = true
-                frame.Active = true
-                frame.Parent = sg
-
-                local text = Instance.new("TextLabel")
-                text.BackgroundTransparency = 1
-                text.TextStrokeTransparency = 0
-                text.TextColor3 = Color3.new(1, 1, 1)
-                text.Size = UDim2.new(1, 0, 0.6, 0)
-                text.TextScaled = true
-                text.Text = "Lay down the beat! Put in the ID number for a song you love that's been uploaded to ROBLOX. Leave it blank to stop playing music."
-                text.Parent = frame
-
-                local input = Instance.new("TextBox")
-                input.BackgroundColor3 = Color3.new(0, 0, 0)
-                input.BackgroundTransparency = 0.5
-                input.BorderColor3 = Color3.new(1, 1, 1)
-                input.TextColor3 = Color3.new(1, 1, 1)
-                input.TextStrokeTransparency = 1
-                input.TextScaled = true
-                input.Text = tostring(lastID)
-                input.Size = UDim2.new(1, 0, 0.2, 0)
-                input.Position = UDim2.new(0, 0, 0.6, 0)
-                input.Parent = frame
-
-                local button = Instance.new("TextButton")
-                button.Style = "RobloxButton"
-                button.Size = UDim2.new(0.75, 0, 0.2, 0)
-                button.Position = UDim2.new(0.125, 0, 0.8, 0)
-                button.TextColor3 = Color3.new(1, 1, 1)
-                button.TextStrokeTransparency = 0
-                button.Text = "Play!"
-                button.TextScaled = true
-                button.Parent = frame
-
-                -- Veste boombox
-                local args = { [1] = 18756289999 }
-                game:GetService("ReplicatedStorage").Remotes.Wear:InvokeServer(unpack(args))
-
-                local function playAudioAll(ID)
-                    if type(ID) ~= "number" then
-                        print("Please insert a valid number!")
-                        return
-                    end
-                    local rs = game:GetService("ReplicatedStorage")
-                    local evt = rs:FindFirstChild("1Gu1nSound1s", true)
-                    if evt then
-                        evt:FireServer(workspace, ID, 1)
+        -- Procura qualquer Remote de som
+        local function findSoundRemote()
+            for _,v in ipairs(ReplicatedStorage:GetDescendants()) do
+                if v:IsA("RemoteEvent") then
+                    if string.find(v.Name:lower(), "sound")
+                    or string.find(v.Name:lower(), "music")
+                    or string.find(v.Name:lower(), "audio") then
+                        return v
                     end
                 end
+            end
+            return nil
+        end
 
-                local function playAudioLocal(ID)
-                    local sound = Instance.new("Sound")
-                    sound.SoundId = "rbxassetid://" .. ID
-                    sound.Volume = 1
-                    sound.Looped = false
-                    sound.Parent = player.Character or workspace
-                    sound:Play()
-                    task.wait(3)
+        local soundRemote = findSoundRemote()
+
+        -- GUI
+        local function createGui()
+            gui = Instance.new("ScreenGui", playerGui)
+
+            local frame = Instance.new("Frame", gui)
+            frame.Size = UDim2.new(0.3,0,0.25,0)
+            frame.Position = UDim2.new(0.35,0,0.35,0)
+            frame.BackgroundColor3 = Color3.fromRGB(25,25,25)
+            frame.Active = true
+            frame.Draggable = true
+
+            local box = Instance.new("TextBox", frame)
+            box.Size = UDim2.new(1,-10,0.3,0)
+            box.Position = UDim2.new(0,5,0.1,0)
+            box.Text = tostring(lastID)
+            box.TextScaled = true
+            box.BackgroundColor3 = Color3.fromRGB(0,0,0)
+            box.TextColor3 = Color3.new(1,1,1)
+
+            local btn = Instance.new("TextButton", frame)
+            btn.Size = UDim2.new(1,-10,0.3,0)
+            btn.Position = UDim2.new(0,5,0.55,0)
+            btn.Text = "PLAY"
+            btn.TextScaled = true
+            btn.BackgroundColor3 = Color3.fromRGB(40,40,40)
+            btn.TextColor3 = Color3.new(1,1,1)
+
+            btn.MouseButton1Click:Connect(function()
+                local id = tonumber(box.Text)
+                if not id then return end
+                lastID = id
+
+                -- FE (se existir remote)
+                if soundRemote then
+                    pcall(function()
+                        soundRemote:FireServer(id)
+                    end)
+                end
+
+                -- Local fallback (sempre funciona)
+                local sound = Instance.new("Sound")
+                sound.SoundId = "rbxassetid://"..id
+                sound.Volume = 1
+                sound.Parent = workspace
+                sound:Play()
+
+                task.delay(5,function()
                     sound:Destroy()
-                end
-
-                button.MouseButton1Click:Connect(function()
-                    local soundID = tonumber(input.Text)
-                    if soundID then
-                        lastID = soundID
-                        playAudioAll(soundID)
-                        playAudioLocal(soundID)
-                        if sg then
-                            sg:Destroy()
-                            sg = nil
-                        end
-                    else
-                        print("Invalid ID!")
-                    end
                 end)
-            end)
 
-            boombox.Unequipped:Connect(function()
-                if sg then
-                    sg:Destroy()
-                    sg = nil
-                end
-                local args = { [1] = 18756289999 }
-                game:GetService("ReplicatedStorage").Remotes.Wear:InvokeServer(unpack(args))
-            end)
-
-            boombox.AncestryChanged:Connect(function(_, parent)
-                if not parent and sg then
-                    sg:Destroy()
-                    sg = nil
-                end
+                gui:Destroy()
             end)
         end
 
-        createBoombox()
+        tool.Equipped:Connect(function()
+            if not gui then
+                createGui()
+            end
+        end)
 
+        tool.Unequipped:Connect(function()
+            if gui then
+                gui:Destroy()
+                gui = nil
+            end
+        end)
     end
 })
