@@ -1,53 +1,20 @@
-local Libary = loadstring(game:HttpGet("https://raw.githubusercontent.com/Frost230/Embee/refs/heads/main/Redz"))()
+local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/silvaahub/anonymus-hub-/refs/heads/main/Library%20Amarela.txt"))()
 workspace.FallenPartsDestroyHeight = -math.huge
 
-local Window = Libary:MakeWindow({
-    Title = "Yellow Hub | Brookhaven RP 🏡",
-    SubTitle = "by: Quetzy and Kasis999, Kayrus999",
-    LoadText = "Carregando Yellow Hub",
-    Flags = "Yellow Hub "
+local Window = Library:MakeWindow({
+    Title = " Tiololo Hub | Brookhaven",
+    SubTitle = "By: Ody",
+    LoadText = "Carregando Tiololo Hub...",
+    Flags = "Tiololohub_Brookhaven",
+    Size = UDim2.fromScale(0.55, 0.65) -- Responsivo Mobile/PC
 })
+
+-- ðŸ”¹ BotÃ£o minimizar (Mobile Safe)
 Window:AddMinimizeButton({
-    Button = { Image = "rbxassetid://117731945306", BackgroundTransparency = 0 },
-    Corner = { CornerRadius = UDim.new(35, 1) },
+    Button = {
+        Image = "rbxassetid://99919616573238",
+        BackgroundTransparency = 1
+    },
+    Corner = { CornerRadius = UDim.new(1, 0) }
 })
-
-local InfoTab = Window:MakeTab({ Title = "Info", Icon = "rbxassetid://10723415903" })
-
-InfoTab:AddDiscordInvite({
-    Name = "Yellow Hub Studio",
-    Description = "Join server",
-    Logo = "rbxassetid://117731945306",
-    Invite = "https://discord.gg/MbdySmsDVg",
-}) 
-InfoTab:AddSection({ "Informações do Script" })
-InfoTab:AddParagraph({"Proprietário / Desenvolvedor:"})
-InfoTab:AddParagraph({"Kasis999, ICEMANE, Quetzy"})
-InfoTab:AddParagraph({ "Collaborations:", "Lyra Team" }) 
-InfoTab:AddParagraph({ "Obsfucador:", "Quetzy" })
-InfoTab:AddParagraph({ "Segurança:", "Quetzy" })
-InfoTab:AddParagraph({ "Você está usando:", "Yellow Hub Brookhaven " })
-
-InfoTab:AddSection({ "REJOIN" })
-InfoTab:AddButton({
-    Name = "REJOIN",
-    Callback = function()
-        local TeleportService = game:GetService("TeleportService")
-        TeleportService:TeleportToPlaceInstance(game.PlaceId, game.JobId, game.Players.LocalPlayer)
-    end
-})
-
-local TrollTab = Window:MakeTab({ "Trolling Map", "map" })
-
-
-
-TrollTab:AddSection({ "Trolling Map" })
-
---[[
-
-TrollTab:AddParagraph({ "Aviso", "ESTA FUNÇAO NAO E VISUAL" })
-
---]]
-
-TrollTab:AddSection({ "SkyBox [ by Kasis999 Hub]" })
 
